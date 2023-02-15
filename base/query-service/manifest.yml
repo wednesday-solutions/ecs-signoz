@@ -1,0 +1,30 @@
+# Read the full specification for the "Load Balanced Web Service" type at:
+#  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
+
+# Your service name will be used in naming your resources like log groups, ECS services, etc.
+name: some-query-service #Do not edit this name , as it will be auto-replaced by the script.
+type: Backend Service
+
+# Distribute traffic to your service.
+
+
+# Configuration for your containers and service.
+image:
+  build: ./base/query-service/Dockerfile
+  port: 9093
+
+# in copilot/{service name}/manifest.yml
+http:
+  path: '/'
+network:
+  vpc:
+    placement: private
+
+
+cpu: 256 # Number of CPU units for the task.
+memory: 512 # Amount of memory in MiB used by the task.
+count: 1 # Number of tasks that should be running in your service.
+exec: true # Enable running commands in your container.
+
+
+
