@@ -10,7 +10,7 @@ type: Backend Service
 
 # Configuration for your containers and service.
 image:
-  build: ./base/otel-collector/Dockerfile
+  build: ./some-path/Dockerfile
   port: 4317
 
 # in copilot/{service name}/manifest.yml

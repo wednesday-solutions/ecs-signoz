@@ -2,21 +2,19 @@
 #  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: some-alert-service #Do not edit this name , as it will be auto-replaced by the script.
-type: Backend Service
+name: frontend-svc #Do not edit this name , as it will be auto-replaced by the script.
+type: Load Balanced Web Service
 
 # Distribute traffic to your service.
 http:
-  path: '/'
-network:
-  vpc:
-    placement: private
+  false
+nlb:
+  port: 3301
 
 # Configuration for your containers and service.
 image:
-  build: ./some-path/Dockerfile
-  port: 9093
-  command: ["--queryService.url=some-query-service-url/","--storage.path=/data"]
+  build: ./path+frontend-svc/Dockerfile
+  port: 3301
   
 
 
