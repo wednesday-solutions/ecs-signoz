@@ -14,9 +14,9 @@ network:
 
 # Configuration for your containers and service.
 image:
-  build: ./some-path/Dockerfile
+  build: some-path/Dockerfile
   port: 9093
-  command: ["--queryService.url=some-query-service-url/","--storage.path=/data"]
+  command: ["--queryService.url=http://some-query-service-url","--storage.path=/data"]
   
 
 

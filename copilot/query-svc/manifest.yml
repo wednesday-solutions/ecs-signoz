@@ -10,12 +10,16 @@ type: Backend Service
 
 # Configuration for your containers and service.
 image:
-  build: ./some-path/Dockerfile
-  port: 9093
+  build: ./copilot/query-svc/Dockerfile
+  port: 8080
 
 # in copilot/{service name}/manifest.yml
 http:
   path: '/'
+  healthcheck:
+    path: '/api/v1/version'
+    port: 8080
+  
 network:
   vpc:
     placement: private
@@ -28,3 +32,11 @@ exec: true # Enable running commands in your container.
 
 
 
+taskdef_overrides:
+  - path: "ContainerDefinitions[0].PortMappings[-].ContainerPort"
+    value: 8085
+  # PortMappings[1] gets the port mapping added by the previous rule, since by default Copilot creates a port mapping.
+  - path: "ContainerDefinitions[0].PortMappings[1].Protocol"
+    value: "tcp"
+  - path: "ContainerDefinitions[0].PortMappings[1].HostPort"
+    value: 8085  

@@ -8,7 +8,7 @@ Copy ./data/alertmanager /data
 
 
 # CMD ["--queryService.url=http://signo-publi-pyw7y8wsube3-a6af62bf5764a750.elb.ap-southeast-1.amazonaws.com:8080/","--storage.path=/data"]
-CMD ["--queryService.url=some-query-service-url/","--storage.path=/data"]
+CMD ["--queryService.url=http://some-query-service-url","--storage.path=/data"]
 
 
 EXPOSE 9093

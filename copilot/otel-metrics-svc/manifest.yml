@@ -2,7 +2,7 @@
 #  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: otel-svc.dev.signoz-app.local:8889 #Do not edit this name , as it will be auto-replaced by the script.
+name: otel-metrics-svc #Do not edit this name , as it will be auto-replaced by the script.
 type: Backend Service
 
 # Distribute traffic to your service.
@@ -10,12 +10,11 @@ type: Backend Service
 
 # Configuration for your containers and service.
 image:
-  build: ./path+otel-metrics-svc/Dockerfile
+  build: ./copilot/otel-metrics-svc/Dockerfile
   port: 4317
 
 # in copilot/{service name}/manifest.yml
-http:
-  path: '/'
+
 network:
   vpc:
     placement: private

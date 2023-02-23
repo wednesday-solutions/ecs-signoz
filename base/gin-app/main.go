@@ -65,9 +65,9 @@ func initTracer() func(context.Context) error {
 }
 
 func main() {
-	log.Println(os.Getenv("LOL"))
-	// cleanup := initTracer()
-	// defer cleanup(context.Background())
+
+	cleanup := initTracer()
+	defer cleanup(context.Background())
 
 	r := gin.Default()
 	r.Use(otelgin.Middleware(serviceName))

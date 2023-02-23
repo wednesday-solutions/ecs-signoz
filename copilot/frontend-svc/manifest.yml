@@ -13,7 +13,7 @@ nlb:
 
 # Configuration for your containers and service.
 image:
-  build: ./path+frontend-svc/Dockerfile
+  build: ./copilot/frontend-svc/Dockerfile
   port: 3301
   
 

@@ -44,14 +44,15 @@ QueryServiceAddress="${QuerySvcName}.${2}.${AppName}.local:8080"
 QueryServiceAddressInternal="${QuerySvcName}.${2}.${AppName}.local:8085"
 AlertManagerServiceAddress="${AlertManagerSvcName}.${2}.${AppName}.local:9093"
 
-path="./copilot/"
+path=".\/copilot\/"
 
 mkdir -p copilot/$OtelSvcName
 cp base/otel-collector/manifest.yml copilot/$OtelSvcName/manifest.yml
 cp base/otel-collector/Dockerfile copilot/$OtelSvcName/Dockerfile
+cp base/otel-collector/otel-collector-config.yaml copilot/$OtelSvcName/otel-collector-config.yaml
 sed -i -r "s/some-otel-svc-name/$OtelSvcName/" copilot/$OtelSvcName/manifest.yml
-p=path+"$OtelSvcName"
-sed -i -r "s/some-path/${p}/" copilot/$OtelSvcName/manifest.yml
+p="${path}${OtelSvcName}"
+sed -i -r "s/some-path/$p/" copilot/$OtelSvcName/manifest.yml
 rm copilot/$OtelSvcName/manifest.yml-r
 
 
@@ -63,11 +64,11 @@ cp base/otel-metrics-collector/Dockerfile copilot/$OtelMetricsSvcName/Dockerfile
 
 
 
-sed -i -r "s/some-otel-metrics-svc-name/$OtelServiceAddressInternal/" copilot/$OtelMetricsSvcName/manifest.yml
+sed -i -r "s/some-otel-metrics-svc-name/$OtelMetricsSvcName/" copilot/$OtelMetricsSvcName/manifest.yml
 
 sed -i -r "s/otel-collector-url/$OtelMetricsSvcName/" copilot/$OtelMetricsSvcName/otel-collector-metrics-config.yaml
-p=path+"$OtelMetricsSvcName"
-sed -i -r "s/some-path/${p}/" copilot/$OtelMetricsSvcName/manifest.yml
+p="${path}${OtelMetricsSvcName}"
+sed -i -r "s/some-path/$p/" copilot/$OtelMetricsSvcName/manifest.yml
 rm copilot/$OtelMetricsSvcName/manifest.yml-r
 rm copilot/$OtelMetricsSvcName/otel-collector-metrics-config.yaml-r
 
@@ -78,11 +79,12 @@ cp -r base/query-service/dashboards copilot/$QuerySvcName/dashboards
 cp -R base/query-service/data copilot/$QuerySvcName/data
 cp base/query-service/prometheus.yml copilot/$QuerySvcName/prometheus.yml
 cp base/query-service/Dockerfile copilot/$QuerySvcName/Dockerfile
-echo "lol"
+
 sed -i -r "s/some-query-service/$QuerySvcName/" copilot/$QuerySvcName/manifest.yml
 sed -i -r "s/some-alert-manager-url/$AlertManagerServiceAddress/" copilot/$QuerySvcName/prometheus.yml
-p=path+"$QuerySvcName"
-sed -i -r "s/some-path/${p}/" copilot/$OtelMetricsSvcName/manifest.yml
+sed -i -r "s/some-alert-manager-url/$AlertManagerServiceAddress/" copilot/$QuerySvcName/Dockerfile
+p="${path}${QuerySvcName}"
+sed -i -r "s/some-path/$p/" copilot/$QuerySvcName/manifest.yml
 
 rm copilot/$QuerySvcName/prometheus.yml-r
 rm copilot/$QuerySvcName/manifest.yml-r
@@ -93,10 +95,11 @@ cp base/alert-manager/manifest.yml copilot/$AlertManagerSvcName/manifest.yml
 cp -r base/alert-manager/data copilot/$AlertManagerSvcName/data
 cp base/alert-manager/Dockerfile copilot/$AlertManagerSvcName/Dockerfile
 
-p=path+"$AlertManagerSvcName"
+p="${path}${AlertManagerSvcName}"
 sed -i -r "s/some-alert-service/$AlertManagerSvcName/" copilot/$AlertManagerSvcName/manifest.yml
-sed -i -r "s/some-alert-manager-url/$QueryServiceAddressInternal/" copilot/$AlertManagerSvcName/manifest.yml
-sed -i -r "s/some-path/${p}/" copilot/$OtelMetricsSvcName/manifest.yml
+sed -i -r "s/some-query-service-url/$QueryServiceAddressInternal/" copilot/$AlertManagerSvcName/manifest.yml
+sed -i -r "s/some-query-service-url/$QueryServiceAddressInternal/" copilot/$AlertManagerSvcName/Dockerfile
+sed -i -r "s/some-path/$p/" copilot/$AlertManagerSvcName/manifest.yml
 
 rm copilot/$AlertManagerSvcName/manifest.yml-r
 
@@ -106,38 +109,39 @@ cp base/frontend/manifest.yml copilot/$FrontendSvcName/manifest.yml
 cp -r base/frontend/common copilot/$FrontendSvcName/common
 cp base/frontend/Dockerfile copilot/$FrontendSvcName/Dockerfile
 
-p=path+"$FrontendSvcName"
+p="${path}${FrontendSvcName}"
 sed -i -r "s/some-frontend/$FrontendSvcName/" copilot/$FrontendSvcName/manifest.yml
 sed -i -r "s/some-alert-manager-url/$AlertManagerServiceAddress/" copilot/$FrontendSvcName/common/nginx-config.conf
 sed -i -r "s/some-query-service/$QueryServiceAddress/" copilot/$FrontendSvcName/common/nginx-config.conf
-sed -i -r "s/some-path/${p}/" copilot/$FrontendSvcName/manifest.yml
+sed -i -r "s/some-path/$p/" copilot/$FrontendSvcName/manifest.yml
 
 rm copilot/$FrontendSvcName/manifest.yml-r
 rm copilot/$FrontendSvcName/common/nginx-config.conf-r
 
+p="${path}test-svc"
+mkdir -p copilot/test-svc
+cp -r base/gin-app/ copilot/test-svc/
+sed -i -r "s/some-otel-endpoint/$OtelServiceAddress/" copilot/test-svc/Dockerfile
+sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
 
 copilot app init $AppName
 
-copilot init -a "$AppName" -t "Backend Service" -n "$OtelSvcName"
+# copilot init -a "$AppName" -t "Backend Service" -n "$OtelSvcName"
 copilot env init --name $2 --profile default --default-config
 copilot env deploy --name $2
 
 
 copilot svc init -a "$AppName" -t "Backend Service" -n "$OtelSvcName"
+copilot svc deploy --name "$OtelSvcName" -e "$2" 
 copilot svc init -a "$AppName" -t "Backend Service" -n "$OtelMetricsSvcName"
+copilot svc deploy --name "$OtelMetricsSvcName" -e "$2" 
 copilot svc init -a "$AppName" -t "Backend Service" -n "$QuerySvcName"
+copilot svc  deploy --name "$QuerySvcName" -e "$2" 
 copilot svc init -a "$AppName" -t "Backend Service" -n "$AlertManagerSvcName"
+copilot svc deploy --name "$AlertManagerSvcName" -e "$2" 
 copilot svc init -a "$AppName" -t "Load Balanced Web Service" -n "$FrontendSvcName"
 
 
-copilot deploy --name "$OtelSvcName" -e "$2" 
+copilot svc deploy --name "$FrontendSvcName" -e "$2" 
 
-copilot deploy --name "$OtelMetricsSvcName" -e "$2" 
-
-copilot deploy --name "$QuerySvcName" -e "$2" 
-
-copilot deploy --name "$AlertManagerSvcName" -e "$2" 
-
-copilot deploy --name "$FrontendSvcName" -e "$2" 
-
-
+exit 

@@ -10,12 +10,18 @@ type: Backend Service
 
 # Configuration for your containers and service.
 image:
-  build: ./some-path/Dockerfile
+  build: some-path/Dockerfile
   port: 4317
 
 # in copilot/{service name}/manifest.yml
 http:
   path: '/'
+  healthcheck:
+    path: '/'
+    port: 13133
+    interval: 15s
+    timeout: 10s
+    grace_period: 60s
 network:
   vpc:
     placement: private
@@ -28,8 +34,10 @@ exec: true # Enable running commands in your container.
 
 taskdef_overrides:
   - path: "ContainerDefinitions[0].PortMappings[-].ContainerPort"
-    value: 8889
+    value: 13133
   # PortMappings[1] gets the port mapping added by the previous rule, since by default Copilot creates a port mapping.
   - path: "ContainerDefinitions[0].PortMappings[1].Protocol"
     value: "tcp"
+  - path: "ContainerDefinitions[0].PortMappings[1].HostPort"
+    value: 13133
 

@@ -13,7 +13,7 @@ nlb:
 
 # Configuration for your containers and service.
 image:
-  build: ./some-path/Dockerfile
+  build: some-path/Dockerfile
   port: 3301
   
 
