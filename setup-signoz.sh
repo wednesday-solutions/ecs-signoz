@@ -124,24 +124,24 @@ cp -r base/gin-app/ copilot/test-svc/
 sed -i -r "s/some-otel-endpoint/$OtelServiceAddress/" copilot/test-svc/Dockerfile
 sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
 
-copilot app init $AppName
+# copilot app init $AppName
 
-# copilot init -a "$AppName" -t "Backend Service" -n "$OtelSvcName"
-copilot env init --name $2 --profile default --default-config
-copilot env deploy --name $2
-
-
-copilot svc init -a "$AppName" -t "Backend Service" -n "$OtelSvcName"
-copilot svc deploy --name "$OtelSvcName" -e "$2" 
-copilot svc init -a "$AppName" -t "Backend Service" -n "$OtelMetricsSvcName"
-copilot svc deploy --name "$OtelMetricsSvcName" -e "$2" 
-copilot svc init -a "$AppName" -t "Backend Service" -n "$QuerySvcName"
-copilot svc  deploy --name "$QuerySvcName" -e "$2" 
-copilot svc init -a "$AppName" -t "Backend Service" -n "$AlertManagerSvcName"
-copilot svc deploy --name "$AlertManagerSvcName" -e "$2" 
-copilot svc init -a "$AppName" -t "Load Balanced Web Service" -n "$FrontendSvcName"
+# # copilot init -a "$AppName" -t "Backend Service" -n "$OtelSvcName"
+# copilot env init --name $2 --profile default --default-config
+# copilot env deploy --name $2
 
 
-copilot svc deploy --name "$FrontendSvcName" -e "$2" 
+# copilot svc init -a "$AppName" -t "Backend Service" -n "$OtelSvcName"
+# copilot svc deploy --name "$OtelSvcName" -e "$2" 
+# copilot svc init -a "$AppName" -t "Backend Service" -n "$OtelMetricsSvcName"
+# copilot svc deploy --name "$OtelMetricsSvcName" -e "$2" 
+# copilot svc init -a "$AppName" -t "Backend Service" -n "$QuerySvcName"
+# copilot svc  deploy --name "$QuerySvcName" -e "$2" 
+# copilot svc init -a "$AppName" -t "Backend Service" -n "$AlertManagerSvcName"
+# copilot svc deploy --name "$AlertManagerSvcName" -e "$2" 
+# copilot svc init -a "$AppName" -t "Load Balanced Web Service" -n "$FrontendSvcName"
+
+
+# copilot svc deploy --name "$FrontendSvcName" -e "$2" 
 
 exit 

@@ -122,14 +122,6 @@ Resources:
       GroupDescription: Enable HTTP from 0.0.0.0/0
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '9000'
-          ToPort: '9000'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '9009'
-          ToPort: '9009'
-          CidrIp: 0.0.0.0/0  
-        - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
           CidrIp: 0.0.0.0/0  
@@ -169,7 +161,32 @@ Resources:
           FromPort: '22'
           ToPort: '22'
           CidrIp: 0.0.0.0/0  
-      VpcId: !Ref VPC    
+      VpcId: !Ref VPC
+  BastionHostNetworkInterface1:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      GroupSet: 
+        - !Ref WebServerSecurityGroup
+  BastionHost: 
+    Type: AWS::EC2::Instance
+    DependsOn: BastionHostNetworkInterface1
+    Properties:
+      ImageId: ami-0fc5e138c75e0c123
+      InstanceType: t2.micro
+      NetworkInterfaces: 
+        - NetworkInterfaceId: !Ref BastionHostNetworkInterface1
+          DeviceIndex: "0"
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeType: gp2
+            VolumeSize: 30
+            DeleteOnTermination: true
+            Encrypted: true    
+      Tags:
+       - Key: Name
+         Value: bastion-host
   EC2Instance1: 
     Type: AWS::EC2::Instance
     DependsOn: Ec2NetworkInterface1
@@ -206,7 +223,7 @@ Resources:
     DependsOn: Ec2NetworkInterface2
     Type: AWS::EC2::NetworkInterface
     Properties:
-      SubnetId: !Ref PublicSubnetA
+      SubnetId: !Ref PrivateSubnetA
       GroupSet: 
         - !Ref ZookeeperSecurityGroup
 
@@ -214,14 +231,14 @@ Resources:
     Type: AWS::EC2::NetworkInterface
     DependsOn: Ec2NetworkInterface3
     Properties:
-      SubnetId: !Ref PublicSubnetB
+      SubnetId: !Ref PrivateSubnetB
       GroupSet: 
         - !Ref ZookeeperSecurityGroup
   Ec2NetworkInterface3:
 
     Type: AWS::EC2::NetworkInterface
     Properties:
-      SubnetId: !Ref PublicSubnetA
+      SubnetId: !Ref PrivateSubnetA
       GroupSet: 
         - !Ref ZookeeperSecurityGroup
   EC2Instance2: 
@@ -293,14 +310,14 @@ Resources:
     DependsOn: EC2Instance1
     Type: AWS::EC2::NetworkInterface
     Properties:
-      SubnetId: !Ref PublicSubnetA
+      SubnetId: !Ref PrivateSubnetA
       GroupSet: 
         - !Ref ClickhouseSecurityGroup
   EC2InstanceClickhouse1: 
     Type: AWS::EC2::Instance
-    DependsOn: Ec2NetworkInterfaceClickhouse6
+    DependsOn: Ec2NetworkInterfaceClickhouse1
     Properties:
-      ImageId: ami-0f16ed3676f940188
+      ImageId: ami-061381f2b3a3c890e
       InstanceType: t2.small
       UserData:
         Fn::Base64 : !Sub 
@@ -308,24 +325,22 @@ Resources:
             #!/bin/bash -xe
             echo "hello-world"
             sudo sed -i -r "s/shard-1-replica-1/${server_1}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-1-replica-2/${server_2}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-1/${server_3}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-2/${server_4}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-1/${server_5}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-2/${server_6}/" /etc/clickhouse-server/config.d/cluster.xml
+            sudo sed -i -r "s/shard-2-replica-1/${server_2}/" /etc/clickhouse-server/config.d/cluster.xml
+            sudo sed -i -r "s/shard-3-replica-1/${server_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/zookeeper-1-host/${z_1}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/zookeeper-2-host/${z_2}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
+            sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
+            sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo systemctl restart clickhouse-server
-          - server_1: localhost
+          - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
             server_3: !GetAtt Ec2NetworkInterfaceClickhouse3.PrimaryPrivateIpAddress
-            server_4: !GetAtt Ec2NetworkInterfaceClickhouse4.PrimaryPrivateIpAddress
-            server_5: !GetAtt Ec2NetworkInterfaceClickhouse5.PrimaryPrivateIpAddress
-            server_6: !GetAtt Ec2NetworkInterfaceClickhouse6.PrimaryPrivateIpAddress
             z_1: !GetAtt EC2Instance1.PrivateDnsName
             z_2: !GetAtt EC2Instance2.PrivateDnsName
             z_3: !GetAtt EC2Instance3.PrivateDnsName
+            s_num: 1
+            r_num: 1
 
 
       NetworkInterfaces: 
@@ -353,7 +368,7 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse1
     Properties:
-      ImageId: ami-0f16ed3676f940188
+      ImageId: ami-061381f2b3a3c890e
       InstanceType: t2.small
       UserData:
         Fn::Base64 : !Sub 
@@ -361,24 +376,22 @@ Resources:
             #!/bin/bash -xe
             echo "hello-world"
             sudo sed -i -r "s/shard-1-replica-1/${server_1}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-1-replica-2/${server_2}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-1/${server_3}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-2/${server_4}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-1/${server_5}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-2/${server_6}/" /etc/clickhouse-server/config.d/cluster.xml
+            sudo sed -i -r "s/shard-2-replica-1/${server_2}/" /etc/clickhouse-server/config.d/cluster.xml
+            sudo sed -i -r "s/shard-3-replica-1/${server_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/zookeeper-1-host/${z_1}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/zookeeper-2-host/${z_2}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
+            sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
+            sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
-            server_2: locahost
+            server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
             server_3: !GetAtt Ec2NetworkInterfaceClickhouse3.PrimaryPrivateIpAddress
-            server_4: !GetAtt Ec2NetworkInterfaceClickhouse4.PrimaryPrivateIpAddress
-            server_5: !GetAtt Ec2NetworkInterfaceClickhouse5.PrimaryPrivateIpAddress
-            server_6: !GetAtt Ec2NetworkInterfaceClickhouse6.PrimaryPrivateIpAddress
             z_1: !GetAtt EC2Instance1.PrivateDnsName
             z_2: !GetAtt EC2Instance2.PrivateDnsName
             z_3: !GetAtt EC2Instance3.PrivateDnsName
+            s_num: 2
+            r_num: 1
 
 
       NetworkInterfaces: 
@@ -398,7 +411,7 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse2
     Properties:
-      ImageId: ami-0f16ed3676f940188
+      ImageId: ami-061381f2b3a3c890e
       InstanceType: t2.small
       UserData:
         Fn::Base64 : !Sub 
@@ -406,24 +419,22 @@ Resources:
             #!/bin/bash -xe
             echo "hello-world"
             sudo sed -i -r "s/shard-1-replica-1/${server_1}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-1-replica-2/${server_2}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-1/${server_3}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-2/${server_4}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-1/${server_5}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-2/${server_6}/" /etc/clickhouse-server/config.d/cluster.xml
+            sudo sed -i -r "s/shard-2-replica-1/${server_2}/" /etc/clickhouse-server/config.d/cluster.xml
+            sudo sed -i -r "s/shard-3-replica-1/${server_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/zookeeper-1-host/${z_1}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/zookeeper-2-host/${z_2}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
+            sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
+            sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
-            server_3: locahost
-            server_4: !GetAtt Ec2NetworkInterfaceClickhouse4.PrimaryPrivateIpAddress
-            server_5: !GetAtt Ec2NetworkInterfaceClickhouse5.PrimaryPrivateIpAddress
-            server_6: !GetAtt Ec2NetworkInterfaceClickhouse6.PrimaryPrivateIpAddress
+            server_3: !GetAtt Ec2NetworkInterfaceClickhouse3.PrimaryPrivateIpAddress
             z_1: !GetAtt EC2Instance1.PrivateDnsName
             z_2: !GetAtt EC2Instance2.PrivateDnsName
             z_3: !GetAtt EC2Instance3.PrivateDnsName
+            s_num: 3
+            r_num: 1
 
 
       NetworkInterfaces: 
@@ -441,170 +452,11 @@ Resources:
       GroupSet: 
         - !Ref ClickhouseSecurityGroup
 
-
-  Ec2NetworkInterfaceClickhouse4:
-    DependsOn: Ec2NetworkInterfaceClickhouse3
-    Type: AWS::EC2::NetworkInterface
-    Properties:
-      SubnetId: !Ref PrivateSubnetB
-      GroupSet: 
-        - !Ref ClickhouseSecurityGroup
-  EC2InstanceClickhouse4: 
-    Type: AWS::EC2::Instance
-    DependsOn: EC2InstanceClickhouse3
-    Properties:
-      ImageId: ami-0f16ed3676f940188
-      InstanceType: t2.small
-      UserData:
-        Fn::Base64 : !Sub 
-          - |
-            #!/bin/bash -xe
-            echo "hello-world"
-            sudo sed -i -r "s/shard-1-replica-1/${server_1}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-1-replica-2/${server_2}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-1/${server_3}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-2/${server_4}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-1/${server_5}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-2/${server_6}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/zookeeper-1-host/${z_1}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/zookeeper-2-host/${z_2}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo systemctl restart clickhouse-server
-          - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
-            server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
-            server_3: !GetAtt Ec2NetworkInterfaceClickhouse3.PrimaryPrivateIpAddress
-            server_4: localhost
-            server_5: !GetAtt Ec2NetworkInterfaceClickhouse5.PrimaryPrivateIpAddress
-            server_6: !GetAtt Ec2NetworkInterfaceClickhouse6.PrimaryPrivateIpAddress
-            z_1: !GetAtt EC2Instance1.PrivateDnsName
-            z_2: !GetAtt EC2Instance2.PrivateDnsName
-            z_3: !GetAtt EC2Instance3.PrivateDnsName
-
-
-      NetworkInterfaces: 
-        - NetworkInterfaceId: !Ref Ec2NetworkInterfaceClickhouse4
-          DeviceIndex: "0"
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeType: gp2
-            VolumeSize: 30
-            DeleteOnTermination: true
-            Encrypted: true    
-      Tags:
-       - Key: Name
-         Value: clickhouse-4             
-  Ec2NetworkInterfaceClickhouse5:
-    DependsOn: Ec2NetworkInterfaceClickhouse4
-    Type: AWS::EC2::NetworkInterface
-    Properties:
-      SubnetId: !Ref PrivateSubnetA
-      GroupSet: 
-        - !Ref ClickhouseSecurityGroup
-  EC2InstanceClickhouse5: 
-    Type: AWS::EC2::Instance
-    DependsOn: EC2InstanceClickhouse4
-    Properties:
-      ImageId: ami-0f16ed3676f940188
-      InstanceType: t2.small
-      UserData:
-        Fn::Base64 : !Sub 
-          - |
-            #!/bin/bash -xe
-            echo "hello-world"
-            sudo sed -i -r "s/shard-1-replica-1/${server_1}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-1-replica-2/${server_2}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-1/${server_3}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-2/${server_4}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-1/${server_5}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-2/${server_6}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/zookeeper-1-host/${z_1}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/zookeeper-2-host/${z_2}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo systemctl restart clickhouse-server
-          - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
-            server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
-            server_3: !GetAtt Ec2NetworkInterfaceClickhouse3.PrimaryPrivateIpAddress
-            server_4: !GetAtt Ec2NetworkInterfaceClickhouse5.PrimaryPrivateIpAddress
-            server_5: localhost
-            server_6: !GetAtt Ec2NetworkInterfaceClickhouse6.PrimaryPrivateIpAddress
-            z_1: !GetAtt EC2Instance1.PrivateDnsName
-            z_2: !GetAtt EC2Instance2.PrivateDnsName
-            z_3: !GetAtt EC2Instance3.PrivateDnsName
-
-
-      NetworkInterfaces: 
-        - NetworkInterfaceId: !Ref Ec2NetworkInterfaceClickhouse5
-          DeviceIndex: "0"
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeType: gp2
-            VolumeSize: 30
-            DeleteOnTermination: true
-            Encrypted: true    
-      Tags:
-       - Key: Name
-         Value: clickhouse-5           
-        
-  Ec2NetworkInterfaceClickhouse6:
-    DependsOn: Ec2NetworkInterfaceClickhouse5
-    Type: AWS::EC2::NetworkInterface
-    Properties:
-      SubnetId: !Ref PrivateSubnetB
-      GroupSet: 
-        - !Ref ClickhouseSecurityGroup   
-  EC2InstanceClickhouse6: 
-    Type: AWS::EC2::Instance
-    DependsOn: EC2InstanceClickhouse5
-    Properties:
-      ImageId: ami-0f16ed3676f940188
-      InstanceType: t2.small
-      UserData:
-        Fn::Base64 : !Sub 
-          - |
-            #!/bin/bash -xe
-            echo "hello-world"
-            sudo sed -i -r "s/shard-1-replica-1/${server_1}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-1-replica-2/${server_2}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-1/${server_3}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-2-replica-2/${server_4}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-1/${server_5}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/shard-3-replica-2/${server_6}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/zookeeper-1-host/${z_1}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/zookeeper-2-host/${z_2}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
-            sudo systemctl restart clickhouse-server
-          - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
-            server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
-            server_3: !GetAtt Ec2NetworkInterfaceClickhouse3.PrimaryPrivateIpAddress
-            server_4: !GetAtt Ec2NetworkInterfaceClickhouse5.PrimaryPrivateIpAddress
-            server_5: !GetAtt Ec2NetworkInterfaceClickhouse6.PrimaryPrivateIpAddress
-            server_6: localhost
-            z_1: !GetAtt EC2Instance1.PrivateDnsName
-            z_2: !GetAtt EC2Instance2.PrivateDnsName
-            z_3: !GetAtt EC2Instance3.PrivateDnsName
-
-      NetworkInterfaces: 
-        - NetworkInterfaceId: !Ref Ec2NetworkInterfaceClickhouse6
-          DeviceIndex: "0"
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeType: gp2
-            VolumeSize: 30
-            DeleteOnTermination: true
-            Encrypted: true    
-      Tags:
-       - Key: Name
-         Value: clickhouse-6                
-
-
 Outputs:
   VpcId:
     Description: Id of the vpc created by cloudformation
     Value: !GetAtt VPC.VpcId
-  PublicDns:
+  ClickhouseDnsHost:
     Description: public dns of the ec2 instance
-    Value:  !GetAtt EC2Instance1.PublicDnsName   
+    Value:  !GetAtt EC2InstanceClickhouse3.PrivateDnsName   
 
