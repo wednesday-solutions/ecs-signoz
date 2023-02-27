@@ -53,7 +53,7 @@ extensions:
 
 exporters:
   clickhousemetricswrite:
-    endpoint: tcp://ec2-52-220-11-80.ap-southeast-1.compute.amazonaws.com:9000/?database=signoz_metrics
+    endpoint: tcp://clickhouse-host:9000/?database=signoz_metrics
 
 service:
   telemetry:
