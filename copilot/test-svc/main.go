@@ -9,10 +9,12 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-logr/stdr"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -71,12 +73,15 @@ func main() {
 
 	r := gin.Default()
 	r.Use(otelgin.Middleware(serviceName))
+	logger := stdr.New(log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile))
+
+	otel.SetLogger(logger)
 
 	r.GET("/ping", func(c *gin.Context) {
-		log.Println("hello")
 
-		log.Println("lol")
-		time.Sleep(2 * time.Second)
+		logger.Info("example log")
+		log.Println("hello world")
+		time.Sleep(1 * time.Second)
 		c.Status(200)
 		c.JSON(http.StatusOK, gin.H{"hello": "World"})
 
@@ -85,6 +90,3 @@ func main() {
 	r.Run(":8090")
 
 }
-
-///home/ec2-user
-//printf "Which is the best Linux Distro?\n"  >>  file.txt

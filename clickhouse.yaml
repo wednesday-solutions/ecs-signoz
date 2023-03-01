@@ -458,5 +458,17 @@ Outputs:
     Value: !GetAtt VPC.VpcId
   ClickhouseDnsHost:
     Description: public dns of the ec2 instance
-    Value:  !GetAtt EC2InstanceClickhouse3.PrivateDnsName   
+    Value:  !GetAtt EC2InstanceClickhouse3.PrivateDnsName
+  PublicSubNetAId:
+    Description: Id of public subnet A
+    Value: !GetAtt PublicSubnetA.SubnetId
+  PublicSubNetBId:
+    Description: Id of public subnet b
+    Value: !GetAtt PublicSubnetB.SubnetId
+  PrivateSubNetAId:
+    Description: Id of private subnet A
+    Value: !GetAtt PrivateSubnetA.SubnetId
+  PrivateSubNetBId:
+    Description: Id of public subnet A
+    Value: !GetAtt PrivateSubnetB.SubnetId            
 

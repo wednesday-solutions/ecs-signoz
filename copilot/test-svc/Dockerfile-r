@@ -15,3 +15,7 @@ RUN go build -o /go-docker-demo
 EXPOSE 8090
 
 CMD [ "/go-docker-demo" ]
+
+
+
+

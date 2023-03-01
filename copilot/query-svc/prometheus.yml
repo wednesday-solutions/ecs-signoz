@@ -23,4 +23,4 @@ rule_files:
 scrape_configs: []
 
 remote_read:
-  - url: tcp://ec2-52-220-11-80.ap-southeast-1.compute.amazonaws.com:9000/?database=signoz_metrics
+  - url: tcp://ip-10-1-50-67.ap-southeast-1.compute.internal:9000/?database=signoz_metrics

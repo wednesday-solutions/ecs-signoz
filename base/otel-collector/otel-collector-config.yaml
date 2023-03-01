@@ -117,21 +117,21 @@ extensions:
 
 exporters:
   clickhousetraces:
-    datasource: tcp://ec2-52-220-11-80.ap-southeast-1.compute.amazonaws.com:9000/?database=signoz_traces
+    datasource: tcp://clickhouse-host:9000/?database=signoz_traces
     docker_multi_node_cluster: ${DOCKER_MULTI_NODE_CLUSTER}
     low_cardinal_exception_grouping: ${LOW_CARDINAL_EXCEPTION_GROUPING}
   clickhousemetricswrite:
-    endpoint: tcp://ec2-52-220-11-80.ap-southeast-1.compute.amazonaws.com:9000/?database=signoz_metrics
+    endpoint: tcp://clickhouse-host:9000/?database=signoz_metrics
     resource_to_telemetry_conversion:
       enabled: true
   clickhousemetricswrite/prometheus:
-    endpoint: tcp://ec2-52-220-11-80.ap-southeast-1.compute.amazonaws.com:9000/?database=signoz_metrics
+    endpoint: tcp://clickhouse-host:9000/?database=signoz_metrics
   prometheus:
     endpoint: 0.0.0.0:8889
   # logging: {}
 
   clickhouselogsexporter:
-    dsn: tcp://ec2-52-220-11-80.ap-southeast-1.compute.amazonaws.com:9000/
+    dsn: tcp://clickhouse-host:9000/
     docker_multi_node_cluster: ${DOCKER_MULTI_NODE_CLUSTER}
     timeout: 5s
     sending_queue:

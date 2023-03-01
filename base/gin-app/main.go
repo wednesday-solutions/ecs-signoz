@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-logr/stdr"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -74,6 +75,11 @@ func main() {
 
 	r.GET("/ping", func(c *gin.Context) {
 		time.Sleep(2 * time.Second)
+
+		logger := stdr.New(log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile))
+		otel.SetLogger(logger)
+		logger.Info("example log")
+
 		c.Status(200)
 		c.JSON(http.StatusOK, gin.H{"hello": "World"})
 

@@ -1,7 +1,7 @@
 From signoz/query-service:${DOCKER_TAG:-0.16.0}
 
 
-ENV ClickHouseUrl=tcp://ec2-52-220-11-80.ap-southeast-1.compute.amazonaws.com:9000/?database=signoz_traces
+ENV ClickHouseUrl=tcp://clickhouse-host:9000/?database=signoz_traces
 ENV ALERTMANAGER_API_PREFIX=http://some-alert-manager-url/api/
 ENV SIGNOZ_LOCAL_DB_PATH=/var/lib/signoz/signoz.db
 ENV DASHBOARDS_PATH=/root/config/dashboards
