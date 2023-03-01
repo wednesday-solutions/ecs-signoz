@@ -1,0 +1,13 @@
+signoz-app:
+  otel-service-name: "otel"
+  query-servcice-name: "query"
+  alert-service-name: "alert"
+  frontend-service-name: "frontend"
+  environment-name: "dev"
+  application-name: "signoz"
+  clickhouse-stack-name: "clickhouse"
+  zookeeper-disk-size: 30
+  clickhouse-disk-size: 30
+  zookeeper-instance-type: "t2.small"
+  clickhouse-instance-type: "t2.small"
+  

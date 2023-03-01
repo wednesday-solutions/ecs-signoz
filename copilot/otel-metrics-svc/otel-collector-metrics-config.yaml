@@ -53,7 +53,7 @@ extensions:
 
 exporters:
   clickhousemetricswrite:
-    endpoint: tcp://ip-10-1-50-67.ap-southeast-1.compute.internal:9000/?database=signoz_metrics
+    endpoint: tcp://ip-10-1-50-225.ap-southeast-1.compute.internal:9000/?database=signoz_metrics
 
 service:
   telemetry:
