@@ -31,3 +31,6 @@ exec: true # Enable running commands in your container.
 
 
 
+logging:
+  image: public.ecr.aws/k8o0c2l3/fbit:latest
+  configFilePath: /logDestinations.conf

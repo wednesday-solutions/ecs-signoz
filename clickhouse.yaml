@@ -1,4 +1,63 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Mappings:
+  RegionMap:
+    ap-south-1:
+      zookeeper-ami: ami-0809f544f4823a3a0
+      clickhouse-ami: ami-0d12b9139d3490271
+    eu-north-1:
+      zookeeper-ami: ami-09fc4efac65948697
+      clickhouse-ami: ami-04ebc80fe24e85734
+    eu-west-3:
+      zookeeper-ami: ami-03ca5c2aa466c383c
+      clickhouse-ami: ami-00a05cd5851918906
+    eu-west-2:
+      zookeeper-ami: ami-04bd48d131d3f2539
+      clickhouse-ami: ami-0785957fddcc0d2aa
+    eu-west-1:
+      zookeeper-ami: ami-05262f77f4a58627b
+      clickhouse-ami: ami-091111613f8008808
+    ap-northeast-3:
+      zookeeper-ami: ami-062b1b56757905e68
+      clickhouse-ami: ami-0e4b2c29fe8159a81
+    ap-northeast-2:
+      zookeeper-ami: ami-0afe4e17974ec8899
+      clickhouse-ami: ami-02d3409151147f9c5
+    ap-northeast-1:
+      zookeeper-ami: ami-0feb004f34fbeb54b
+      clickhouse-ami: ami-0f9b54ee6703ca6ce
+    ca-central-1:
+      zookeeper-ami: ami-08b099378355c22e3
+      clickhouse-ami: ami-07491d6fa2a0be77b
+    sa-east-1:
+      zookeeper-ami: ami-0ff03ff99bb749a43
+      clickhouse-ami: ami-044e5376596be446a
+    ap-southeast-1:
+      zookeeper-ami: ami-01f3d80c3cb33ce1f
+      clickhouse-ami: ami-00e5a7d31928e4c50
+    ap-southeast-2:
+      zookeeper-ami: ami-0bf48169eb245e48b
+      clickhouse-ami: ami-0009d5237bf2761d5
+    eu-central-1:
+      zookeeper-ami: ami-0a560a935e9c50540
+      clickhouse-ami: ami-05bfa434ebc0e3d64
+    us-east-1:
+      zookeeper-ami: ami-0ecb3ad5c6fa31e13
+      clickhouse-ami: ami-0d38a7a8a915f695e
+    us-east-2:
+      zookeeper-ami: ami-0573190c8d06c5e52
+      clickhouse-ami: ami-0fdfa72a5786c34b0
+    us-west-1:
+      zookeeper-ami: ami-0026a926c44ea96be
+      clickhouse-ami: ami-03dcc7f50fa64ec73
+    us-west-2:
+      zookeeper-ami: ami-07f65c3bfa8f128d0
+      clickhouse-ami: ami-0e51d01a6edba187e
+
+
+
+
+
+
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -171,7 +230,8 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: BastionHostNetworkInterface1
     Properties:
-      ImageId: ami-0fc5e138c75e0c123
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zookeeper-ami"]
+
       InstanceType: t2.micro
       NetworkInterfaces: 
         - NetworkInterfaceId: !Ref BastionHostNetworkInterface1
@@ -192,14 +252,15 @@ Resources:
     DependsOn: ZookeeperNetworkInterface2
     Type: AWS::EC2::NetworkInterface
     Properties:
-      SubnetId: !Ref PrivateSubnetA
+      SubnetId: !Ref PublicSubnetA
       GroupSet: 
         - !Ref ZookeeperSecurityGroup       
   ZookeeperEc2Instance1: 
     Type: AWS::EC2::Instance
     DependsOn: ZookeeperNetworkInterface1
     Properties:
-      ImageId: ami-0fc5e138c75e0c123
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zookeeper-ami"]
+
       InstanceType: t2.small
       UserData:
         Fn::Base64 : !Sub 
@@ -233,7 +294,7 @@ Resources:
     Type: AWS::EC2::NetworkInterface
     DependsOn: ZookeeperNetworkInterface3
     Properties:
-      SubnetId: !Ref PrivateSubnetB
+      SubnetId: !Ref PublicSubnetB
       GroupSet: 
         - !Ref ZookeeperSecurityGroup
   
@@ -241,7 +302,8 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: ZookeeperNetworkInterface2
     Properties:
-      ImageId: ami-0fc5e138c75e0c123
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zookeeper-ami"]
+
       InstanceType: t2.small
       UserData:
         Fn::Base64 : !Sub 
@@ -275,7 +337,7 @@ Resources:
 
     Type: AWS::EC2::NetworkInterface
     Properties:
-      SubnetId: !Ref PrivateSubnetA
+      SubnetId: !Ref PublicSubnetA
       GroupSet: 
         - !Ref ZookeeperSecurityGroup
   
@@ -284,7 +346,8 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: ZookeeperNetworkInterface3
     Properties:
-      ImageId: ami-0fc5e138c75e0c123
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zookeeper-ami"]
+
       InstanceType: t2.small
       UserData:
         Fn::Base64 : !Sub 
@@ -322,7 +385,8 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: Ec2NetworkInterfaceClickhouse1
     Properties:
-      ImageId: ami-061381f2b3a3c890e
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "clickhouse-ami"]
+
       InstanceType: t2.small
       UserData:
         Fn::Base64 : !Sub 
@@ -373,7 +437,8 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse1
     Properties:
-      ImageId: ami-061381f2b3a3c890e
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "clickhouse-ami"]
+
       InstanceType: t2.small
       UserData:
         Fn::Base64 : !Sub 
@@ -423,7 +488,8 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse2
     Properties:
-      ImageId: ami-061381f2b3a3c890e
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "clickhouse-ami"]
+
       InstanceType: t2.small
       UserData:
         Fn::Base64 : !Sub 
