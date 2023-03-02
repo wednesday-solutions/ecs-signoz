@@ -1,0 +1,18 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  config:
+    cmds:
+      - yq '.signoz-app.otel-service-name' signoz-ecs-config.yml
+      - otel=$(yq '.signoz-app.otel-service-name' signoz-ecs-config.yml) | echo $otel
+      - echo $otel
+    silent: true
+  default:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true

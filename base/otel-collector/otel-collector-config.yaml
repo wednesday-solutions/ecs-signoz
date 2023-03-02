@@ -1,4 +1,6 @@
 receivers:
+  fluentforward:
+    endpoint: 0.0.0.0:24224
   filelog/dockercontainers:
     include: [  "/var/lib/docker/containers/*/*.log" ]
     start_at: end
@@ -143,6 +145,7 @@ exporters:
       max_elapsed_time: 300s
 
 service:
+  
   telemetry:
     metrics:
       address: 0.0.0.0:8888
@@ -171,6 +174,6 @@ service:
       receivers: [otlp/spanmetrics]
       exporters: [prometheus]
     logs:
-      receivers: [otlp, filelog/dockercontainers]
+      receivers: [otlp, fluentforward]
       processors: [batch]
       exporters: [clickhouselogsexporter]

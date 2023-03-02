@@ -9,7 +9,7 @@ alerting:
   alertmanagers:
   - static_configs:
     - targets:
-      - alert-svc.dev.signoz-app.local:9093
+      - alery-svc.dev.signoz-app.local:9093
       # - alertmanager:9093
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
@@ -23,4 +23,4 @@ rule_files:
 scrape_configs: []
 
 remote_read:
-  - url: tcp://ip-10-1-50-67.ap-southeast-1.compute.internal:9000/?database=signoz_metrics
+  - url: tcp://ip-10-1-50-225.ap-southeast-1.compute.internal:9000/?database=signoz_metrics

@@ -30,6 +30,27 @@ echo "frontend $6-svc"
 
 # echo "environment name $6"
 
+
+aws cloudformation validate-template --template-body file://clickhouse.yaml --no-cli-pager
+aws cloudformation create-stack --template-body file://clickhouse.yaml --stack-name clickhouse --no-cli-pager &> /dev/null
+aws cloudformation wait stack-create-complete --stack-name clickhouse
+export vpcId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="VpcId").OutputValue')
+echo $vpcId
+export publicSubNetAId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetAId").OutputValue')
+echo $publicSubNetAId
+export publicSubNetBId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetBId").OutputValue')
+echo $publicSubNetBId
+export privateSubNetAId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetAId").OutputValue')
+echo $privateSubNetAId
+export privateSubNetBId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetBId").OutputValue')
+echo $privateSubNetBId
+export clickhouseHost=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="ClickhouseDnsHost").OutputValue')
+echo $clickhouseHost
+
+
+
+
+
 AppName="$1-app"
 OtelSvcName="$3-svc"
 OtelMetricsSvcName="$3-metrics-svc"
@@ -46,6 +67,7 @@ AlertManagerServiceAddress="${AlertManagerSvcName}.${2}.${AppName}.local:9093"
 
 path=".\/copilot\/"
 
+# setting up config files
 mkdir -p copilot/$OtelSvcName
 cp base/otel-collector/manifest.yml copilot/$OtelSvcName/manifest.yml
 cp base/otel-collector/Dockerfile copilot/$OtelSvcName/Dockerfile
@@ -134,27 +156,14 @@ sed -i -r "s/some-otel-endpoint/$OtelServiceAddress/" copilot/test-svc/Dockerfil
 sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
 
 copilot app init $AppName
+#creating a clickhouse cluster
 
-aws cloudformation validate-template --template-body file://clickhouse.yaml --no-cli-pager
-aws cloudformation create-stack --template-body file://clickhouse.yaml --stack-name clickhouse --no-cli-pager &> /dev/null
-aws cloudformation wait stack-create-complete --stack-name clickhouse
-export vpcId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="VpcId").OutputValue')
-echo $vpcId
-export publicSubNetAId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetAId").OutputValue')
-echo $publicSubNetAId
-export publicSubNetBId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetBId").OutputValue')
-echo $publicSubNetBId
-export privateSubNetAId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetAId").OutputValue')
-echo $privateSubNetAId
-export privateSubNetBId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetBId").OutputValue')
-echo $privateSubNetBId
-export clickhouseHost=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="ClickhouseDnsHost").OutputValue')
-echo $clickhouseHost
 
+#creating env from cloudformation provided vpc and subnet
 copilot env init --name $2 --profile default --import-vpc-id $vpcId --import-private-subnets $privateSubNetAId,$privateSubNetBId --import-public-subnets $publicSubNetAId,$publicSubNetBId
 copilot env deploy --name $2
 
-
+#deploying services
 copilot svc init -a "$AppName" -t "Backend Service" -n "$OtelSvcName"
 copilot svc deploy --name "$OtelSvcName" -e "$2" 
 copilot svc init -a "$AppName" -t "Backend Service" -n "$OtelMetricsSvcName"
@@ -164,8 +173,6 @@ copilot svc  deploy --name "$QuerySvcName" -e "$2"
 copilot svc init -a "$AppName" -t "Backend Service" -n "$AlertManagerSvcName"
 copilot svc deploy --name "$AlertManagerSvcName" -e "$2" 
 copilot svc init -a "$AppName" -t "Load Balanced Web Service" -n "$FrontendSvcName"
-
-
 copilot svc deploy --name "$FrontendSvcName" -e "$2" 
 
 exit 0

@@ -14,7 +14,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
-
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -73,15 +72,14 @@ func main() {
 
 	r := gin.Default()
 	r.Use(otelgin.Middleware(serviceName))
-	logger := stdr.New(log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile))
-
-	otel.SetLogger(logger)
 
 	r.GET("/ping", func(c *gin.Context) {
+		time.Sleep(2 * time.Second)
 
+		logger := stdr.New(log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile))
+		otel.SetLogger(logger)
 		logger.Info("example log")
-		log.Println("hello world")
-		time.Sleep(1 * time.Second)
+		log.Println("some log ********")
 		c.Status(200)
 		c.JSON(http.StatusOK, gin.H{"hello": "World"})
 

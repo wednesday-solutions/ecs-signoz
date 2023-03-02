@@ -2,7 +2,7 @@
 #  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: alert-svc #Do not edit this name , as it will be auto-replaced by the script.
+name: alery-svc #Do not edit this name , as it will be auto-replaced by the script.
 type: Backend Service
 
 # Distribute traffic to your service.
@@ -14,7 +14,7 @@ network:
 
 # Configuration for your containers and service.
 image:
-  build: ./copilot/alert-svc/Dockerfile
+  build: ./copilot/alery-svc/Dockerfile
   port: 9093
   command: ["--queryService.url=http://query-svc.dev.signoz-app.local:8085","--storage.path=/data"]
   
