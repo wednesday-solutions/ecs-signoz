@@ -1,8 +1,11 @@
 signoz-app:
+  existing-vpc: "no"
+
   otel-service-name: "otel"
   query-servcice-name: "query"
   alert-service-name: "alert"
   frontend-service-name: "frontend"
+  clickhouse-host-name: ""
   environment-name: "dev"
   application-name: "signoz"
   clickhouse-stack-name: "clickhouse"
@@ -10,4 +13,12 @@ signoz-app:
   clickhouse-disk-size: 30
   zookeeper-instance-type: "t2.small"
   clickhouse-instance-type: "t2.small"
-  
+  fluentbit-repo-name: "fluentbit-repository"
+  fluentbit-local-image-name: "custom-fluent"
+  fluentbit-image-url: "511522223657.dkr.ecr.ap-south-1.amazonaws.com/fluentbit-repository"
+  public-subnet-a-id: ""
+  public-subnet-b-id: ""
+  private-subnet-a-id: ""
+  private-subnet-b-id: ""
+  vpc-id: ""
+  otel-service-endpoint: ""
