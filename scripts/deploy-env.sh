@@ -1,10 +1,10 @@
 #!/bin/bash
 
-
 appName=$(yq '.signoz-app.application-name' signoz-ecs-config.yml)
 [ -z "$appName" ] && echo "No app name argument supplied" && exit 1
 AppName="$appName-app"
 copilot app init $AppName
+
 #creating a clickhouse cluster
 
 envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)
@@ -25,7 +25,7 @@ privateSubnetAId=$(yq '.signoz-app.private-subnet-a-id' signoz-ecs-config.yml)
 privateSubnetBId=$(yq '.signoz-app.private-subnet-b-id' signoz-ecs-config.yml)
 [ -z "$privateSubnetBId" ] && echo "please provide id of a private subnet" && exit 1   
 
-
-#creating env from cloudformation provided vpc and subnet
-copilot env init --name $envName --profile default --import-vpc-id $vpcId --import-private-subnets $privateSubNetAId,$privateSubNetBId --import-public-subnets $publicSubNetAId,$publicSubNetBId
+echo $privateSubnetAId
+# creating env from cloudformation provided vpc and subnet
+copilot env init --name $envName --profile default --import-vpc-id $vpcId --import-private-subnets $privateSubnetAId,$privateSubnetBId --import-public-subnets $publicSubnetAId,$publicSubnetBId
 copilot env deploy --name $envName

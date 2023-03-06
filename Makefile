@@ -1,10 +1,23 @@
 hello:
 	echo "hello world"
-deploy-signoz-standard:
-	./setup-scripts.sh ./setup-script.sh signoz dev otel query alery frontend
+deploy:
+	./scripts/setup-files.sh
+	./scripts/deploy-env.sh
+	./scripts/deploy-service.sh
+	./scripts/register-fluent.sh
+deploy-existing-copilot-app:
+	./scripts/setup-files.sh
+	./scripts/deploy-service.sh
+	./scripts/register-fluent.sh
+
 deploy-clickhouse:
 	./setup-clickhouse.sh	
+scaffold:
+	./scripts/scaffolding.sh svc	
 fluentbit-upload:
 	./scripts/register-fluent.sh
 clickhouse:
 	./scripts/clickhouse.sh		
+delete:
+	./scripts/cleanup-services.sh  --yes 
+	./scripts/cleanup-clickhouse.sh  --yes 

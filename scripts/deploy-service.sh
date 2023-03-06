@@ -41,15 +41,15 @@ echo "frontend $frontend-svc"
 
 
 
-AppName="$1-app"
-OtelSvcName="$3-svc"
-OtelMetricsSvcName="$3-metrics-svc"
-QuerySvcName="$4-svc"
-AlertManagerSvcName="$5-svc"
-FrontendSvcName="$6-svc"
+AppName="$appName-app"
+OtelSvcName="$otel-svc"
+OtelMetricsSvcName="$otel-metrics-svc"
+QuerySvcName="$query-svc"
+AlertManagerSvcName="$alert-svc"
+FrontendSvcName="$frontend-svc"
 
 
-OtelServiceAddress="${OtelSvcName}.${envName}.${AppName}.local:4317"
+export OtelServiceAddress="${OtelSvcName}.${envName}.${AppName}.local:4317"
 yq -i e '.signoz-app.otel-service-endpoint |= env(OtelServiceAddress)' signoz-ecs-config.yml 
 # OtelServiceAddressInternal="${OtelSvcName}.${envName}.${AppName}.local:8889"
 # QueryServiceAddress="${QuerySvcName}.${envName}.${AppName}.local:8080"
