@@ -19,5 +19,5 @@ fluentbit-upload:
 clickhouse:
 	./scripts/clickhouse.sh		
 delete:
-	./scripts/cleanup-services.sh  --yes 
-	./scripts/cleanup-clickhouse.sh  --yes 
+	./scripts/cleanup-services.sh  
+	./scripts/cleanup-clickhouse.sh 
