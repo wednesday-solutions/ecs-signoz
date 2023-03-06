@@ -2,10 +2,15 @@
 
 1. please have bash utility jq installed to process json.[To install](https://stedolan.github.io/jq/download/)
 2. please have bash utility yq installed to process yml. [To install](https://github.com/mikefarah/yq)
-3. please install the aws cli and docker[To install](https://github.com/mikefarah/yq)
-4. Please have aws cli configured with access key,secret and region
-5. please have aws copilot version of the current develop branch on github
-6. please configure signoz-ecs-config.yml
+3. please install the aws cli and docker.[To install docker  ](https://docs.docker.com/engine/install/) [To install aws-cli  ](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+4. Please have aws cli configured with access key,secret and region. [To configure](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html)
+5. please have aws copilot version of the current develop branch on github.[To install - use make to install a standalone binary](https://github.com/aws/copilot-cli/blob/eda606604b61a4b00cdf0de4847784eb7a633b7d/CONTRIBUTING.md#environment)
+6. please configure signoz-ecs-config.yml.
+
+#### Configuring values in signoz-ecs-config.yml
+
+1. If your want to use an existing vpc keep the value of existing-vpc other than true
+2. 
 
 ### To deploy aws on ecs sigoz:
 
