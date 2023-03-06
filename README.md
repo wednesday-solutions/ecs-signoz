@@ -9,9 +9,12 @@
 
 ### To deploy aws on ecs sigoz:
 
+(Please keep the value of clickhouse host blank if you want to deploy a new cluster in your vpc)
+
+
 #### If you want to deploy from scratch - to deploy your own vpc,clickhouse cluster and fargate cluster
 
-configure signoz-ecs-config.yml
+first configure signoz-ecs-config.yml with appropriate values(do not change the value of existing-vpc=no)
 
 Then execute the script with 
 ```
@@ -21,7 +24,7 @@ make deploy
 #### If you want to deploy clickhouse cluster and services in your own vpc:
 
 configure vpc id and subnet id in signoz-ecs-config.yml
-make the value of variable existing-vpc to yes
+make the value of variable existing-vpc to true
 add the vpc id and all the subnets id
 
 ```
@@ -29,7 +32,7 @@ make deploy
 ```
 #### If you have already deployed clickhouse cluster and want to deploy all services in a new vpc and fargate cluster:
 
-configure the clichouse host in signoz-ecs-config.yml
+configure the clickhouse host in signoz-ecs-config.yml
 
 ```
 make deploy
@@ -44,9 +47,9 @@ configure vpc id and subnet id in signoz-ecs-config.yml
 make deploy
 ```
 
-#### If you have already configured copilot with an app name and environment(the subnets should the same where clickhouse is present):
+#### If you have already configured copilot with an app name and environment(the subnets should be the same as the one where clickhouse cluster is present):
 
-configure the clichouse host in signoz-ecs-config.yml
+configure the clickhouse host in signoz-ecs-config.yml
 configure vpc id and subnet id in signoz-ecs-config.yml
 
 ```
@@ -59,3 +62,18 @@ To scaffold a service with a sample file use command:
 ```
 make scaffold $service-name
 ```
+
+To use your own custom ami's for clickhouse and zookeeper  :
+ 
+    you can copy the ami's in all region using the script :
+    ```
+    ./scripts/copy-ami.sh
+    ```
+
+    then you can use the script to get a mapping of all ami's using:
+    ```
+    ./scripts/amimap.sh
+    ```
+    Then replace the mappings in the clickhouse.yml cloudformation template
+    
+
