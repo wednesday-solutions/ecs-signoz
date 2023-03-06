@@ -1,8 +1,8 @@
 ### Pre-Requisites:
 
-1. please have bash utility jq installed to process json.[To install](https://link-url-here.org)
-2. please have bash utility yq installed to process yml
-3. please install the aws cli and docker
+1. please have bash utility jq installed to process json.[To install](https://stedolan.github.io/jq/download/)
+2. please have bash utility yq installed to process yml. [To install](https://github.com/mikefarah/yq)
+3. please install the aws cli and docker[To install](https://github.com/mikefarah/yq)
 4. Please have aws cli configured with access key,secret and region
 5. please have aws copilot version of the current develop branch on github
 6. please configure signoz-ecs-config.yml
