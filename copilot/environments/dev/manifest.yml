@@ -9,14 +9,14 @@ type: Environment
 # Import your own VPC and subnets or configure how they should be created.
 network:
   vpc:
-    id: vpc-0aa6fac8ae5d5f01c
+    id: vpc-02f50b8b34b21dec6
     subnets:
       public:
-        - id: subnet-09fc10bc1806c911c
-        - id: subnet-0da7f6bf912b9ae35
+        - id: subnet-04bcbde67eae92dc2
+        - id: subnet-0f38cdb0a50798ff2
       private:
-        - id: subnet-0a7b07e960aa3683b
-        - id: subnet-023d731f8c8e42794
+        - id: subnet-09f310755773d0f3c
+        - id: subnet-048adeca630ffcfba
 
 # Configure the load balancers in your environment, once created.
 # http:

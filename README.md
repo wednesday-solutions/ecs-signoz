@@ -52,3 +52,10 @@ configure vpc id and subnet id in signoz-ecs-config.yml
 ```
 make deploy-existing-copilot-app
 ```
+
+
+To scaffold a service with a sample file use command:
+
+```
+make scaffold $service-name
+```

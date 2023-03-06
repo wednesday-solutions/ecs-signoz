@@ -13,7 +13,7 @@ deploy-existing-copilot-app:
 deploy-clickhouse:
 	./setup-clickhouse.sh	
 scaffold:
-	./scripts/scaffolding.sh svc	
+	./scripts/scaffolding.sh $(svc)
 fluentbit-upload:
 	./scripts/register-fluent.sh
 clickhouse:

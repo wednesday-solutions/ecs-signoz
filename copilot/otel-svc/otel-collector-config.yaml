@@ -119,21 +119,21 @@ extensions:
 
 exporters:
   clickhousetraces:
-    datasource: tcp://ip-10-1-50-11.ap-south-1.compute.internal:9000/?database=signoz_traces
+    datasource: tcp://ip-10-1-50-228.ap-south-1.compute.internal:9000/?database=signoz_traces
     docker_multi_node_cluster: ${DOCKER_MULTI_NODE_CLUSTER}
     low_cardinal_exception_grouping: ${LOW_CARDINAL_EXCEPTION_GROUPING}
   clickhousemetricswrite:
-    endpoint: tcp://ip-10-1-50-11.ap-south-1.compute.internal:9000/?database=signoz_metrics
+    endpoint: tcp://ip-10-1-50-228.ap-south-1.compute.internal:9000/?database=signoz_metrics
     resource_to_telemetry_conversion:
       enabled: true
   clickhousemetricswrite/prometheus:
-    endpoint: tcp://ip-10-1-50-11.ap-south-1.compute.internal:9000/?database=signoz_metrics
+    endpoint: tcp://ip-10-1-50-228.ap-south-1.compute.internal:9000/?database=signoz_metrics
   prometheus:
     endpoint: 0.0.0.0:8889
   # logging: {}
 
   clickhouselogsexporter:
-    dsn: tcp://ip-10-1-50-11.ap-south-1.compute.internal:9000/
+    dsn: tcp://ip-10-1-50-228.ap-south-1.compute.internal:9000/
     docker_multi_node_cluster: ${DOCKER_MULTI_NODE_CLUSTER}
     timeout: 5s
     sending_queue:

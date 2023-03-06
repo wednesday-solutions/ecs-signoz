@@ -13,7 +13,7 @@ cp -r base/fluentbit/ copilot/fluentbit/
 
 sed -i -r "s/some-otel-endpoint/$otelEndpoint/" copilot/fluentbit/fluentbit.conf
 
-rm copilot/fluentbit/fluentbit.conf
+rm copilot/fluentbit/fluentbit.conf-r
 
 
 
