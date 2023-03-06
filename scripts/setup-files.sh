@@ -12,6 +12,7 @@ frontend=$(yq '.signoz-app.frontend-service-name' signoz-ecs-config.yml)
 clickhouseHost=$(yq '.signoz-app.clickhouse-host-name' signoz-ecs-config.yml)
 
 
+
 [ -z "$appName" ] && echo "No app name argument supplied" && exit 1
 
 [ -z "$envName" ] && echo "No env name argument is provided" && exit 1
@@ -44,31 +45,31 @@ echo "frontend $frontend-svc"
 
 if [ -z "$clickhouseHost" ]
 then
-./setup-clickhouse.sh
+./scripts/clickhouse.sh
 fi
 
 
 
+clickhouseHost=$(yq '.signoz-app.clickhouse-host-name' signoz-ecs-config.yml)
 
 
 
 
 
 
+AppName="$appName-app"
+OtelSvcName="$otel-svc"
+OtelMetricsSvcName="$otel-metrics-svc"
+QuerySvcName="$query-svc"
+AlertManagerSvcName="$alert-svc"
+FrontendSvcName="$frontend-svc"
 
-AppName="$1-app"
-OtelSvcName="$3-svc"
-OtelMetricsSvcName="$3-metrics-svc"
-QuerySvcName="$4-svc"
-AlertManagerSvcName="$5-svc"
-FrontendSvcName="$6-svc"
 
-
-OtelServiceAddress="${OtelSvcName}.${2}.${AppName}.local:4317"
-OtelServiceAddressInternal="${OtelSvcName}.${2}.${AppName}.local:8889"
-QueryServiceAddress="${QuerySvcName}.${2}.${AppName}.local:8080"
-QueryServiceAddressInternal="${QuerySvcName}.${2}.${AppName}.local:8085"
-AlertManagerServiceAddress="${AlertManagerSvcName}.${2}.${AppName}.local:9093"
+OtelServiceAddress="${OtelSvcName}.${envName}.${AppName}.local:4317"
+OtelServiceAddressInternal="${OtelSvcName}.${envName}.${AppName}.local:8889"
+QueryServiceAddress="${QuerySvcName}.${envName}.${AppName}.local:8080"
+QueryServiceAddressInternal="${QuerySvcName}.${envName}.${AppName}.local:8085"
+AlertManagerServiceAddress="${AlertManagerSvcName}.${envName}.${AppName}.local:9093"
 
 path=".\/copilot\/"
 
@@ -158,5 +159,5 @@ p="${path}test-svc"
 mkdir -p copilot/test-svc
 cp -r base/gin-app/ copilot/test-svc/
 sed -i -r "s/some-otel-endpoint/$OtelServiceAddress/" copilot/test-svc/Dockerfile
-sed -i -r "s/some-otel-endpoint/$OtelServiceAddress/" copilot/test-svc/fluentbit.conf/
+
 sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml

@@ -194,6 +194,10 @@ Resources:
       CidrBlock: 10.1.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
+  NewKeyPair:
+      Type: 'AWS::EC2::KeyPair'
+      Properties:
+          KeyName: MyClickhouseKeyPair
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     DependsOn: VPC
@@ -360,7 +364,7 @@ Resources:
     DependsOn: BastionHostNetworkInterface1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zami"]
-
+      KeyName: !Ref NewKeyPair
       InstanceType: t2.micro
       NetworkInterfaces: 
         - NetworkInterfaceId: !Ref BastionHostNetworkInterface1
@@ -389,7 +393,7 @@ Resources:
     DependsOn: ZookeeperNetworkInterface1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zami"]
-
+      KeyName: !Ref NewKeyPair
       InstanceType: !Ref ZookeeperInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -434,6 +438,7 @@ Resources:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zami"]
 
       InstanceType: !Ref ZookeeperInstanceType
+      KeyName: !Ref NewKeyPair
       UserData:
         Fn::Base64 : !Sub 
           - |
@@ -476,6 +481,7 @@ Resources:
     DependsOn: ZookeeperNetworkInterface3
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zami"]
+      KeyName: !Ref NewKeyPair
 
       InstanceType: !Ref ZookeeperInstanceType
       UserData:
@@ -515,6 +521,7 @@ Resources:
     DependsOn: Ec2NetworkInterfaceClickhouse1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
+      KeyName: !Ref NewKeyPair
 
       InstanceType:  !Ref ClickhouseInstanceType
       UserData:
@@ -569,6 +576,7 @@ Resources:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
 
       InstanceType: !Ref ClickhouseInstanceType
+      KeyName: !Ref NewKeyPair
       UserData:
         Fn::Base64 : !Sub 
           - |
@@ -618,6 +626,7 @@ Resources:
     DependsOn: EC2InstanceClickhouse2
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
+      KeyName: !Ref NewKeyPair
 
       InstanceType: !Ref ClickhouseInstanceType
       UserData:
