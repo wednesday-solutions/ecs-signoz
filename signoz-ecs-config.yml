@@ -6,8 +6,8 @@ signoz-app:
   frontend-service-name: "frontend"
   clickhouse-host-name: ""
   environment-name: "dev"
-  application-name: "my-signoz"
-  clickhouse-stack-name: "clickhouse"
+  application-name: "signoz-a"
+  clickhouse-stack-name: "clickhouse1"
   zookeeper-disk-size: 30
   clickhouse-disk-size: 30
   zookeeper-instance-type: "t2.small"
