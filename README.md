@@ -9,8 +9,11 @@
 
 #### Configuring values in signoz-ecs-config.yml
 
-1. If your want to use an existing vpc keep the value of existing-vpc other than true
-2. 
+1. If your want to use an existing vpc keep the value of existing-vpc other than true.
+2. You can change the name of any of the services if you want to.
+3. You can change the name of cloudformation stack of your clickhouse cluster
+4. can change the instance type of your clikhouse or zookeeper hosts
+5. can change the environment name and application name for the copilot cli.
 
 ### To deploy aws on ecs sigoz:
 
