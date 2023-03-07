@@ -244,3 +244,10 @@ To use your own custom ami's for clickhouse and zookeeper  :
     Then replace the mappings in the clickhouse.yml cloudformation template
     
 
+### For deleting all the services and cleaning up all the resources(is an irreversible action)
+
+This will stop all the ecs services and your clickhouse cloudformation stack.
+
+```
+make delete
+```
