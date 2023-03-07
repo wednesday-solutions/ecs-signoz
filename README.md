@@ -2,20 +2,82 @@ This template allows you to deploy signoz on aws ecs fargate. [(what is signoz?)
 
 Signoz provides comprehensive monitoring for your ECS Fargate service. It tracks and monitors all the important metrics and logs related to your application, infrastructure, and network, and provides real-time alerts for any issues.
 
-Self hosting signoz on aws ecs fargate is also significantly cheaper than using aws native services like xray and cloudwatch to collect metrics,traces and logs.Signoz consists of a clikhouse cluster and multiple services which, hosting them is tedious and inconvenient but this template allows you to do so using a single command.
+You can get traces,metrics and logs for your application
 
+
+![latency of api calls of a sample application](./images/latency-diagram.png "Title")
+Latency of api calls to a sample application in signoz.
+
+![traces of api calls of a sample application](./images/trace.png "Title")
+Traces of our sample application in signoz.
+
+![latency of api calls of a sample application](./images/logs.png "Title")
+Logs of our sample application in signoz
+
+![latency of api calls of a sample application](./images/cpu-metrics.png "Title")
+CPU metrics of our sample application in signoz
+
+Self hosting signoz on aws ecs fargate is also significantly cheaper than using aws native services like xray and cloudwatch to collect metrics,traces and logs.Signoz consists of a clikhouse cluster and multiple services which, hosting them is tedious and inconvenient but this template allows you to do so using a single command.
+---
 ### Pre-Requisites:
 
-1. please have bash utility jq installed to process json.[To install](https://stedolan.github.io/jq/download/)
-2. please have bash utility yq installed to process yml. [To install](https://github.com/mikefarah/yq)
-3. please install the aws cli and docker.[To install docker  ](https://docs.docker.com/engine/install/) [To install aws-cli  ](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-4. Please have aws cli configured with access key,secret and region. [To configure](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html)
-5. please have aws copilot version of the current develop branch on github.[To install - use make to install a standalone binary](https://github.com/aws/copilot-cli/blob/eda606604b61a4b00cdf0de4847784eb7a633b7d/CONTRIBUTING.md#environment)
-6. please configure signoz-ecs-config.yml.
+1. please have bash utility [jq](https://stedolan.github.io/jq/download/) installed to process json.
+2. please have bash utility [yq](https://github.com/mikefarah/yq) installed to process yml. 
+3. please install the [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and [docker](https://docs.docker.com/engine/install/). 
+4. Please have aws cli [To configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html) with access key,secret and region. 
+5. please have aws copilot version of the current develop branch on github. [To install - use make to install a standalone binary](https://github.com/aws/copilot-cli/blob/eda606604b61a4b00cdf0de4847784eb7a633b7d/CONTRIBUTING.md#environment)
+6. please configure signoz-ecs-config.yml file with appropriate values.
 
 
+### Config File:
 
+The signoz-ecs-config.yml files containes all our configuration :
 
+```yaml
+                    signoz-app:
+                        existing-vpc: "false" # toggle this option true if you want to use your own existing vpc to deploy clickhouse and fargate services
+                        otel-service-name: "otel" # name of the otel collector service usied _Signoz_
+                        query-servcice-name: "query" # name of the query service usied _Signoz_
+                        alert-service-name: "alert" # name of the alert service usied _Signoz_
+                        frontend-service-name: "frontend" # name of the frontend service usied _Signoz_
+                        clickhouse-host-name: "" # value of the clickhouse host if you are using your own deployment, will be overwritten by our scripts during deployment
+                        environment-name: "dev" # environment name to be used by the copilot cli
+                        application-name: "signoz-a" # appliation name to be used by copilot cli
+                        clickhouse-stack-name: "clickhouse1" # name of the cloudformation stack to deploy clickhouse
+                        zookeeper-disk-size: 30 # the disk size of your zookeeper instances
+                        clickhouse-disk-size: 30 # the disk size of your clickhouse instances
+                        zookeeper-instance-type: "t2.small" # ec2 instance type - for experimenting please use t2.small, otherwise recommended type is m5.large, it is alsoo depended on the expected load
+                        clickhouse-instance-type: "t2.small" # ec2 instance type - for experimenting please use t2.small, otherwise recommended type is m5. xlarge, it is alsoo depended on the expected load
+                        fluentbit-repo-name: "fluentbit-repository" # name of ecr repository where we will upload a custom docker image , which is used by aws firelens to forward our logs
+                        fluentbit-local-image-name: "custom-fluent" # name of the image locally which we will upload to ecr
+                        fluentbit-image-url: "" # ecr image url of the custom fluentbit image we have uploaded
+                        public-subnet-a-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
+                        public-subnet-b-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
+                        private-subnet-a-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
+                        private-subnet-b-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
+                        vpc-id: "" # please add vpc id if using custom vpc and subnets, will be overwritten by our scripts
+                        otel-service-endpoint: "" # written by our script..will be the endpoint of the otel collector used by the otel sdk
+
+```
+---
+To instrument your applications and send data to SigNoz please refer- https://signoz.io/docs/instrumentation/
+---
+
+How to send logs of your ecs fargate service to signoz?
+
+To send logs of your application to signoz we are going to use [aws firelens](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-launches-firelens-log-router-for-amazon-ecs-and-aws-fargate/).FireLens works with Fluentd and Fluent Bit. We provide the AWS for Fluent Bit image or you can use your own Fluentd or Fluent Bit image. We will create our own custom image where will configure rules which will forward logs from our application to the signoz collector using the fluentforward protocol.
+When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our signoz otel collector to accept logs via firelens.Using the command _make scaffold svcName_ we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
+```yaml
+                                                            logging:
+                                                                image: public.ecr.aws/k8o0c2l3/fbit:latest
+                                                                configFilePath: /logDestinations.conf
+```
+To manuall upload the fluenbit image use command:
+```
+    make fluentbit-upload
+```
+
+---
 In this template we are using cloudformation to host our clickhouse cluster and aws copilot to host our services on ecs fargate.
 ---
 ### Hosting a clickhouse cluster using aws cloudformation:
