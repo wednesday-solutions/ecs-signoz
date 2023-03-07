@@ -16,8 +16,12 @@ Logs of our sample application in signoz
 
 ![latency of api calls of a sample application](./images/cpu-metrics.png "Title")
 CPU metrics of our sample application in signoz
+
+
 ---
+
 Self hosting signoz on aws ecs fargate is also significantly cheaper than using aws native services like xray and cloudwatch to collect metrics,traces and logs.Signoz consists of a clikhouse cluster and multiple services which, hosting them is tedious and inconvenient but this template allows you to do so using a single command.
+
 ---
 ### Pre-Requisites:
 
