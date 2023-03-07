@@ -1,4 +1,4 @@
-This template allows you to deploy signoz on aws ecs fargate. [(what is signoz?)](https://signoz.io/)
+### This template allows you to deploy signoz on aws ecs fargate. [(what is signoz?)](https://signoz.io/)
 
 Signoz provides comprehensive monitoring for your application. It tracks and monitors all the important metrics and logs related to your application, infrastructure, and network, and provides real-time alerts for any issues.
 
@@ -18,9 +18,8 @@ Logs of our sample application in signoz
 CPU metrics of our sample application in signoz
 
 
----
 
-Self hosting signoz on aws ecs fargate is also significantly cheaper than using aws native services like xray and cloudwatch to collect metrics,traces and logs.Signoz consists of a clikhouse cluster and multiple services which, hosting them is tedious and inconvenient but this template allows you to do so using a single command.
+Self hosting signoz on aws ecs fargate is also significantly cheaper than using aws native services like xray and cloudwatch to collect application metrics,traces and logs.Signoz consists of a clikhouse cluster and multiple services, hosting them is tedious and inconvenient process but this template allows you to do so using a single command.
 
 ---
 ### Pre-Requisites:
@@ -67,21 +66,7 @@ The signoz-ecs-config.yml files containes all our configuration :
 To instrument your applications and send data to SigNoz please refer- https://signoz.io/docs/instrumentation/
 ---
 
-How to send logs of your ecs fargate service to signoz?
 
-To send logs of your application to signoz we are going to use [aws firelens](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-launches-firelens-log-router-for-amazon-ecs-and-aws-fargate/).FireLens works with Fluentd and Fluent Bit. We provide the AWS for Fluent Bit image or you can use your own Fluentd or Fluent Bit image. We will create our own custom image where will configure rules which will forward logs from our application to the signoz collector using the fluentforward protocol.
-When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our signoz otel collector to accept logs via firelens.Using the command _make scaffold svcName_ we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
-```yaml
-                                                            logging:
-                                                                image: public.ecr.aws/k8o0c2l3/fbit:latest
-                                                                configFilePath: /logDestinations.conf
-```
-To manuall upload the fluenbit image use command:
-```
-    make fluentbit-upload
-```
-
----
 In this template we are using cloudformation to host our clickhouse cluster and aws copilot to host our services on ecs fargate.
 ---
 ### Hosting a clickhouse cluster using aws cloudformation:
@@ -141,7 +126,23 @@ You will also have to configure vpc id,public and private subnets option in sign
 
 
 
+---
 
+How to send logs of your ecs fargate service to signoz?
+
+To send logs of your application to signoz we are going to use [aws firelens](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-launches-firelens-log-router-for-amazon-ecs-and-aws-fargate/).FireLens works with Fluentd and Fluent Bit. We provide the AWS for Fluent Bit image or you can use your own Fluentd or Fluent Bit image. We will create our own custom image where will configure rules which will forward logs from our application to the signoz collector using the fluentforward protocol.
+When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our signoz otel collector to accept logs via firelens.Using the command _make scaffold svcName_ we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
+```yaml
+                                                            logging:
+                                                                image: public.ecr.aws/k8o0c2l3/fbit:latest
+                                                                configFilePath: /logDestinations.conf
+```
+To manuall upload the fluenbit image use command:
+```
+    make fluentbit-upload
+```
+
+---
 
 
 #### Configuring values in signoz-ecs-config.yml
