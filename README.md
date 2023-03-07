@@ -121,12 +121,12 @@ Aws copilot will allow us to deploy all our signoz services with minimum configu
 You are free to use your own custon vpc and subnets, though they should be the same as your clickhouse cluster(if hosting in a private subnet).
 You will also have to configure vpc id,public and private subnets option in signoz-ecs-config.yml file
 
-                                        signoz-app:
-                                            public-subnet-a-id: ""
-                                            public-subnet-b-id: ""
-                                            private-subnet-a-id: ""
-                                            private-subnet-b-id: ""
-                                            vpc-id: ""
+                                    signoz-app:
+                                        public-subnet-a-id: ""
+                                        public-subnet-b-id: ""
+                                        private-subnet-a-id: ""
+                                        private-subnet-b-id: ""
+                                        vpc-id: ""
 
 
 
@@ -137,9 +137,9 @@ How to send logs of your ecs fargate service to signoz?
 To send logs of your application to signoz we are going to use [aws firelens](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-launches-firelens-log-router-for-amazon-ecs-and-aws-fargate/).FireLens works with Fluentd and Fluent Bit. We provide the AWS for Fluent Bit image or you can use your own Fluentd or Fluent Bit image. We will create our own custom image where will configure rules which will forward logs from our application to the signoz collector using the fluentforward protocol.
 When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our signoz otel collector to accept logs via firelens.Using the command _make scaffold svcName_ we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
 ```yaml
-                                                            logging:
-                                                                image: public.ecr.aws/k8o0c2l3/fbit:latest
-                                                                configFilePath: /logDestinations.conf
+                                    logging:
+                                        image: public.ecr.aws/k8o0c2l3/fbit:latest
+                                        configFilePath: /logDestinations.conf
 ```
 To manuall upload the fluenbit image use command:
 ```
