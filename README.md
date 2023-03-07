@@ -31,35 +31,36 @@ Self hosting signoz on aws ecs fargate is also significantly cheaper than using 
 5. please have aws copilot version of the current develop branch on github. [To install - use make to install a standalone binary](https://github.com/aws/copilot-cli/blob/eda606604b61a4b00cdf0de4847784eb7a633b7d/CONTRIBUTING.md#environment)
 6. please configure signoz-ecs-config.yml file with appropriate values.
 
+---
 
 ### Config File:
 
 The signoz-ecs-config.yml files containes all our configuration :
 
 ```yaml
-        signoz-app:
-            existing-vpc: "false" # toggle this option true if you want to use your own existing vpc to deploy clickhouse and fargate services
-            otel-service-name: "otel" # name of the otel collector service usied _Signoz_
-            query-servcice-name: "query" # name of the query service usied _Signoz_
-            alert-service-name: "alert" # name of the alert service usied _Signoz_
-            frontend-service-name: "frontend" # name of the frontend service usied _Signoz_
-            clickhouse-host-name: "" # value of the clickhouse host if you are using your own deployment, will be overwritten by our scripts during deployment
-            environment-name: "dev" # environment name to be used by the copilot cli
-            application-name: "signoz-a" # appliation name to be used by copilot cli
-            clickhouse-stack-name: "clickhouse1" # name of the cloudformation stack to deploy clickhouse
-            zookeeper-disk-size: 30 # the disk size of your zookeeper instances
-            clickhouse-disk-size: 30 # the disk size of your clickhouse instances
-            zookeeper-instance-type: "t2.small" # ec2 instance type - for experimenting please use t2.small, otherwise recommended type is m5.large, it is alsoo depended on the expected load
-            clickhouse-instance-type: "t2.small" # ec2 instance type - for experimenting please use t2.small, otherwise recommended type is m5. xlarge, it is alsoo depended on the expected load
-            fluentbit-repo-name: "fluentbit-repository" # name of ecr repository where we will upload a custom docker image , which is used by aws firelens to forward our logs
-            fluentbit-local-image-name: "custom-fluent" # name of the image locally which we will upload to ecr
-            fluentbit-image-url: "" # ecr image url of the custom fluentbit image we have uploaded
-            public-subnet-a-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
-            public-subnet-b-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
-            private-subnet-a-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
-            private-subnet-b-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
-            vpc-id: "" # please add vpc id if using custom vpc and subnets, will be overwritten by our scripts
-            otel-service-endpoint: "" # written by our script..will be the endpoint of the otel collector used by the otel sdk
+signoz-app:
+    existing-vpc: "false" # toggle this option true if you want to use your own existing vpc to deploy clickhouse and fargate services
+    otel-service-name: "otel" # name of the otel collector service usied _Signoz_
+    query-servcice-name: "query" # name of the query service usied _Signoz_
+    alert-service-name: "alert" # name of the alert service usied _Signoz_
+    frontend-service-name: "frontend" # name of the frontend service usied _Signoz_
+    clickhouse-host-name: "" # value of the clickhouse host if you are using your own deployment, will be overwritten by our scripts during deployment
+    environment-name: "dev" # environment name to be used by the copilot cli
+    application-name: "signoz-a" # appliation name to be used by copilot cli
+    clickhouse-stack-name: "clickhouse1" # name of the cloudformation stack to deploy clickhouse
+    zookeeper-disk-size: 30 # the disk size of your zookeeper instances
+    clickhouse-disk-size: 30 # the disk size of your clickhouse instances
+    zookeeper-instance-type: "t2.small" # ec2 instance type - for experimenting please use t2.small, otherwise recommended type is m5.large, it is alsoo depended on the expected load
+    clickhouse-instance-type: "t2.small" # ec2 instance type - for experimenting please use t2.small, otherwise recommended type is m5. xlarge, it is alsoo depended on the expected load
+    fluentbit-repo-name: "fluentbit-repository" # name of ecr repository where we will upload a custom docker image , which is used by aws firelens to forward our logs
+    fluentbit-local-image-name: "custom-fluent" # name of the image locally which we will upload to ecr
+    fluentbit-image-url: "" # ecr image url of the custom fluentbit image we have uploaded
+    public-subnet-a-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
+    public-subnet-b-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
+    private-subnet-a-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
+    private-subnet-b-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
+    vpc-id: "" # please add vpc id if using custom vpc and subnets, will be overwritten by our scripts
+    otel-service-endpoint: "" # written by our script..will be the endpoint of the otel collector used by the otel sdk
 
 ```
 ---
@@ -70,6 +71,7 @@ To instrument your applications and send data to SigNoz please refer- https://si
 
 
 In this template we are using cloudformation to host our clickhouse cluster and aws copilot to host our services on ecs fargate.
+
 ---
 ### Hosting a clickhouse cluster using aws cloudformation:
 
