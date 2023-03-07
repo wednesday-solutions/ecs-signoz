@@ -1,8 +1,21 @@
 ### This template allows you to deploy signoz on aws ecs fargate. [(what is signoz?)](https://signoz.io/)
 
+## Table of contents
+* [About Signoz](#about-signoz)
+* [Pre-requisites](#pre-requisites)
+* [Config-File](#config-file)
+* [Hosting clichouse using cloudformation](#hosting-a-clickhouse-cluster-using-aws-cloudformation)
+* [Using AWS Copilot](#why-are-we-using-aws-copilot)
+* [Sending logs](#how-to-send-logs-of-your-ecs-fargate-service-to-signoz)
+* [Deploying signoz on aws ecs](#to-deploy-signoz-on-aws-ecs)
+
+
+### About Signoz:
+
 Signoz provides comprehensive monitoring for your application. It tracks and monitors all the important metrics and logs related to your application, infrastructure, and network, and provides real-time alerts for any issues.
 
 You can get traces,metrics and logs of your application.
+
 
 
 ![latency of api calls of a sample application](./images/latency-diagram.png "Title")
@@ -72,13 +85,17 @@ To instrument your applications and send data to SigNoz please refer- https://si
 
 In this template we are using cloudformation to host our clickhouse cluster and aws copilot to host our services on ecs fargate.
 
+Signoz architecture:
+
+![signoz architecture](./images/signoz-architecture.png "Title")
+
 ---
 ### Hosting a clickhouse cluster using aws cloudformation:
 
 The template can be configured if you want to create a new vpc for our clickhouse-cluster or create the cluster in an existing vpc.
 To create the cluster in an existing vpc just toggle the value of existing vpc to true.
-                                        signoz-app:
-                                            existing-vpc: "true"
+                                signoz-app:
+                                    existing-vpc: "true"
 
 When existing-vpc option is toggled false it will create the following resources:
 
@@ -91,12 +108,12 @@ When existing-vpc option is toggled true:
 
 You will also have to configure vpc id,public and private subnets option in signoz-ecs-config.yml file
 
-                                        signoz-app:
-                                            public-subnet-a-id: ""
-                                            public-subnet-b-id: ""
-                                            private-subnet-a-id: ""
-                                            private-subnet-b-id: ""
-                                            vpc-id: ""
+                                signoz-app:
+                                    public-subnet-a-id: ""
+                                    public-subnet-b-id: ""
+                                    private-subnet-a-id: ""
+                                    private-subnet-b-id: ""
+                                    vpc-id: ""
 
 
 ![clickhouse-custom-vpc.yaml resources diagram ](./images/click-custom.png "Title")
@@ -105,15 +122,15 @@ You will also have to configure vpc id,public and private subnets option in sign
 This creates three zookeeper instances and three clickhouse shards in private subnets of your vpc.
 
 If you are using a managed clickhouse-service, you can mention the host of one of the shards, then will not create it's own clickhouse cluster(on port 9000):
-                                        signoz-app:
-                                            clickhouse-host-name: ""
+                                signoz-app:
+                                    clickhouse-host-name: ""
                                             
 
-You can use custom ami's for zookeeper or clickhouse instances if your organization has special security needs or want to add more functionality (we have made our own [user-data](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) scripts, so each clichouse shard and zookeeper can know about each other at start time). If you do not want to copy your ami's outside of a single region just replace the _ImageId_ field. If you want to copy ami's to all region then use ./scripts/copy-ami.sh script and ./scripts/amimap.sh to generate the mappings,then replace the existing mappings with the output.
+You can use custom ami's for zookeeper or clickhouse instances if your organization has special security needs or want to add more functionality (we have made our own [user-data](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) scripts, so each clichouse shard and zookeeper can know about each other at start time). If you do not want to copy your ami's outside of a single region just replace the _ImageId_ field in clickhouse.yaml or clickhous-custom-vpc.yaml cloudformation template. If you want to copy ami's to all region then use *./scripts/copy-ami.sh* script and *./scripts/amimap.sh* to generate the mappings,then replace the existing mappings with the output.
 
 ---
 
-Why are we using aws copilot?
+### Why are we using aws copilot?
 
 AWS Copilot CLI simplifies the deployment of your applications to AWS. It automates the process of creating AWS resources, configuring them, and deploying your application. This can save you time and effort compared to manual deployment.It simplifies the deployment of your applications to AWS. It automates the process of creating AWS resources, configuring them, and deploying your application. This can save you time and effort compared to manual deployment.
 Aws copilot will allow us to deploy all our signoz services with minimum configuration
@@ -132,10 +149,10 @@ You will also have to configure vpc id,public and private subnets option in sign
 
 ---
 
-How to send logs of your ecs fargate service to signoz?
+### How to send logs of your ecs fargate service to signoz?
 
 To send logs of your application to signoz we are going to use [aws firelens](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-launches-firelens-log-router-for-amazon-ecs-and-aws-fargate/).FireLens works with Fluentd and Fluent Bit. We provide the AWS for Fluent Bit image or you can use your own Fluentd or Fluent Bit image. We will create our own custom image where will configure rules which will forward logs from our application to the signoz collector using the fluentforward protocol.
-When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our signoz otel collector to accept logs via firelens.Using the command _make scaffold svcName_ we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
+When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our signoz otel collector to accept logs via firelens.Using the command *make scaffold svcName* we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
 ```yaml
                                     logging:
                                         image: public.ecr.aws/k8o0c2l3/fbit:latest
@@ -157,7 +174,7 @@ To manuall upload the fluenbit image use command:
 4. can change the instance type of your clikhouse or zookeeper hosts
 5. can change the environment name and application name for the copilot cli.
 
-### To deploy aws on ecs sigoz:
+### To deploy signoz on aws ecs:
 
 (Please keep the value of clickhouse host blank if you want to deploy a new cluster in your vpc)
 
