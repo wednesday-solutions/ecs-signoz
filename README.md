@@ -1,8 +1,8 @@
 This template allows you to deploy signoz on aws ecs fargate. [(what is signoz?)](https://signoz.io/)
 
-Signoz provides comprehensive monitoring for your ECS Fargate service. It tracks and monitors all the important metrics and logs related to your application, infrastructure, and network, and provides real-time alerts for any issues.
+Signoz provides comprehensive monitoring for your application. It tracks and monitors all the important metrics and logs related to your application, infrastructure, and network, and provides real-time alerts for any issues.
 
-You can get traces,metrics and logs for your application
+You can get traces,metrics and logs of your application.
 
 
 ![latency of api calls of a sample application](./images/latency-diagram.png "Title")
@@ -16,7 +16,7 @@ Logs of our sample application in signoz
 
 ![latency of api calls of a sample application](./images/cpu-metrics.png "Title")
 CPU metrics of our sample application in signoz
-
+---
 Self hosting signoz on aws ecs fargate is also significantly cheaper than using aws native services like xray and cloudwatch to collect metrics,traces and logs.Signoz consists of a clikhouse cluster and multiple services which, hosting them is tedious and inconvenient but this template allows you to do so using a single command.
 ---
 ### Pre-Requisites:
