@@ -76,6 +76,23 @@ signoz-app:
     otel-service-endpoint: "" # written by our script..will be the endpoint of the otel collector used by the otel sdk
 
 ```
+
+Config Variables:
+
+* **existing-vpc** - Please use the value false if you want to create new vpc and subnets, but if you have already created vpc and configured subnets change the value to true
+* **vpc-id** - In case your application is already deployed, add the vpc-id within your vpc. If you don’t already have a VPC and subnets configured, `make deploy` will create it for you and add it inline.
+* **public-subnet-*-id** - In case your application is already deployed, add the public subnet-id within your vpc. If you don’t already have a VPC and subnets configured, `make deploy` will create it for you and add it inline.
+* **private-subnet-*-id** - In case your application is already deployed, add the private subnet-id within your vpc. If you don’t already have a VPC and subnets configured, `make deploy` will create it for you and add it inline.
+* **clickhouse-host-name** - In case you are using a managed clickhouse service or your own cluter addthe host of one of the clickhouse shards of your cluster. If you have not deployed a clickhouse cluster, `make deploy` will create one for you using cloudformation and add it iniline.
+* **fluentbit-repo-name** - To send our logs from the application to signoz we will have to create or own custom fluentbit image, this will be the name of your respository in aws ecr which `make deploy` will create for you.
+
+* **otel-service-endpoint** - Our internal service endpoint of our signoz otel collector, all the servicess we are going to deploy will need to send the open telemetry data to this endpoint. `make deploy` will add this value to the  signoz-ecs-config.yml file
+
+
+
+
+
+
 ---
 
 To instrument your applications and send data to SigNoz please refer- https://signoz.io/docs/instrumentation/
