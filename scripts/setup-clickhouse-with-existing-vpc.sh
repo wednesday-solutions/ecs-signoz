@@ -43,8 +43,8 @@ aws cloudformation create-stack --template-body file://clickhouse-custom-vpc.yam
     ParameterKey=PrivateSubnetAId,ParameterValue=$privateSubnetAId \ 
     ParameterKey=PrivateSubnetBId,ParameterValue=$privateSubnetBId \ 
     &> /dev/null
-set -eo pipefail    
-aws cloudformation wait stack-create-complete --stack-name $clickhouseStackName | exit 1
+set -e
+aws cloudformation wait stack-create-complete --stack-name $clickhouseStackName
 export vpcId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="VpcId").OutputValue')
 echo $vpcId
 yq -i e '.signoz-app.vpc-id |= env(vpcId)' signoz-ecs-config.yml

@@ -50,7 +50,8 @@ FrontendSvcName="$frontend-svc"
 
 
 export OtelServiceAddress="${OtelSvcName}.${envName}.${AppName}.local:4317"
-yq -i e '.signoz-app.otel-service-endpoint |= env(OtelServiceAddress)' signoz-ecs-config.yml 
+export Osa="${OtelSvcName}.${envName}.${AppName}.local"
+yq -i e '.signoz-app.otel-service-endpoint |= env(Osa)' signoz-ecs-config.yml 
 # OtelServiceAddressInternal="${OtelSvcName}.${envName}.${AppName}.local:8889"
 # QueryServiceAddress="${QuerySvcName}.${envName}.${AppName}.local:8080"
 # QueryServiceAddressInternal="${QuerySvcName}.${envName}.${AppName}.local:8085"

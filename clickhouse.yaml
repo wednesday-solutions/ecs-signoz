@@ -1,6 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
+
   ZookeeperInstanceType:
     Type: String
     Default: t2.small
