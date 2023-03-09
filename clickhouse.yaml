@@ -1,7 +1,13 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
-
+  AZMore:
+    Description: tells us if we are going to have either 2 or 3 azs
+    Default: "false"
+    Type: String
+    AllowedValues:
+      - true
+      - false
   ZookeeperInstanceType:
     Type: String
     Default: t2.small
@@ -185,7 +191,10 @@ Mappings:
 
 
 
-
+Conditions:
+  CreateMoreSubnets: !Equals 
+    - !Ref AZMore
+    - "true"
 
 
 Resources:
@@ -228,6 +237,17 @@ Resources:
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-Public-B
+  PublicSubnetC:
+    Type: AWS::EC2::Subnet
+    Condition: CreateMoreSubnets
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.1.30.0/24
+      AvailabilityZone: !Select [ 2, !GetAZs ]    # Get the second AZ in the list 
+      MapPublicIpOnLaunch: true
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-Public-C    
   PrivateSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
@@ -248,6 +268,17 @@ Resources:
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-Private-B      
+  PrivateSubnetC:
+    Type: AWS::EC2::Subnet
+    Condition: CreateMoreSubnets
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.1.70.0/24
+      AvailabilityZone: !Select [ 2, !GetAZs ]    # Get the second AZ in the list 
+      MapPublicIpOnLaunch: false
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-Private-C            
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -298,6 +329,12 @@ Resources:
     Properties:
       SubnetId: !Ref PublicSubnetB
       RouteTableId: !Ref PublicRouteTable
+  PublicSubnetCRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: CreateMoreSubnets
+    Properties:
+      SubnetId: !Ref PublicSubnetC
+      RouteTableId: !Ref PublicRouteTable    
   PrivateSubnetARouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -308,6 +345,12 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnetB
       RouteTableId: !Ref PrivateRouteTable
+  PrivateSubnetCRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: CreateMoreSubnets
+    Properties:
+      SubnetId: !Ref PrivateSubnetC
+      RouteTableId: !Ref PrivateRouteTable    
   BastionHostSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -472,7 +515,12 @@ Resources:
 
     Type: AWS::EC2::NetworkInterface
     Properties:
-      SubnetId: !Ref PrivateSubnetA
+      SubnetId:
+        'Fn::If':
+          -  CreateMoreSubnets
+          - !Ref PrivateSubnetC
+          - !Ref PrivateSubnetA
+        
       GroupSet: 
         - !Ref ZookeeperSecurityGroup
   
@@ -619,7 +667,11 @@ Resources:
     DependsOn: Ec2NetworkInterfaceClickhouse2
     Type: AWS::EC2::NetworkInterface
     Properties:
-      SubnetId: !Ref PrivateSubnetA
+      SubnetId:
+        'Fn::If':
+          -  CreateMoreSubnets
+          - !Ref PrivateSubnetC
+          - !Ref PrivateSubnetA
       GroupSet: 
         - !Ref ClickhouseSecurityGroup         
   EC2InstanceClickhouse3: 

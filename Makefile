@@ -18,6 +18,9 @@ fluentbit-upload:
 	./scripts/register-fluent.sh
 clickhouse:
 	./scripts/clickhouse.sh		
-delete:
+delete-all:
 	./scripts/cleanup-services.sh  
+	./scripts/cleanup-clickhouse.sh 	
+delete-all:
+	./scripts/cleanup-app.sh  
 	./scripts/cleanup-clickhouse.sh 
