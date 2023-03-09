@@ -203,6 +203,10 @@ Mappings:
 
 
 Resources:
+  NewKeyPair:
+    Type: 'AWS::EC2::KeyPair'
+    Properties:
+      KeyName: !Join ['-', ['ClickhouseKeyPairName', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
   BastionHostSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -262,7 +266,7 @@ Resources:
     DependsOn: ZookeeperNetworkInterface1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zami"]
-
+      KeyName: !Ref NewKeyPair
       InstanceType: !Ref ZookeeperInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -305,7 +309,7 @@ Resources:
     DependsOn: ZookeeperNetworkInterface2
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zami"]
-
+      KeyName: !Ref NewKeyPair
       InstanceType: !Ref ZookeeperInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -349,7 +353,7 @@ Resources:
     DependsOn: ZookeeperNetworkInterface3
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "zami"]
-
+      KeyName: !Ref NewKeyPair
       InstanceType: !Ref ZookeeperInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -388,7 +392,7 @@ Resources:
     DependsOn: Ec2NetworkInterfaceClickhouse1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
-
+      KeyName: !Ref NewKeyPair
       InstanceType:  !Ref ClickhouseInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -440,7 +444,7 @@ Resources:
     DependsOn: EC2InstanceClickhouse1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
-
+      KeyName: !Ref NewKeyPair
       InstanceType: !Ref ClickhouseInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -491,7 +495,7 @@ Resources:
     DependsOn: EC2InstanceClickhouse2
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
-
+      KeyName: !Ref NewKeyPair
       InstanceType: !Ref ClickhouseInstanceType
       UserData:
         Fn::Base64 : !Sub 
