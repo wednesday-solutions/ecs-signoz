@@ -197,7 +197,7 @@ Resources:
   NewKeyPair:
       Type: 'AWS::EC2::KeyPair'
       Properties:
-          KeyName: MyClickhouseKeyPair
+          KeyName: !Join ['-', ['ClickhouseKeyPairName', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     DependsOn: VPC
