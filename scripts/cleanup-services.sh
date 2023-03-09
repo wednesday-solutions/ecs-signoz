@@ -12,7 +12,7 @@ QuerySvcName="$query-svc"
 AlertManagerSvcName="$alert-svc"
 FrontendSvcName="$frontend-svc"
 
-env=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)
+env=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
 
 [ -z "$appName" ] && echo "No app name argument supplied" && exit 1
 AppName="$appName-app"

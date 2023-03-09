@@ -1,7 +1,7 @@
 #!/bin/bash
 
 appName=$(yq '.signoz-app.application-name' signoz-ecs-config.yml)
-envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)
+envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
 
 otel=$(yq '.signoz-app.otel-service-name' signoz-ecs-config.yml)
 query=$(yq '.signoz-app.query-servcice-name' signoz-ecs-config.yml)
