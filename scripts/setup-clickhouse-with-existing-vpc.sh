@@ -49,23 +49,23 @@ export vpcId=$(aws cloudformation describe-stacks --stack-name clickhouse --outp
 echo $vpcId
 yq -i e '.signoz-app.vpc-id |= env(vpcId)' signoz-ecs-config.yml
 
-export publicSubNetAId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetAId").OutputValue')
+export publicSubNetAId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetAId").OutputValue')
 echo $publicSubNetAId
 yq -i e '.signoz-app.public-subnet-a-id |= env(publicSubNetAId)' signoz-ecs-config.yml
 
-export publicSubNetBId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetBId").OutputValue')
+export publicSubNetBId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetBId").OutputValue')
 echo $publicSubNetBId
 yq -i e '.signoz-app.public-subnet-b-id |= env(publicSubNetBId)' signoz-ecs-config.yml
 
-export privateSubNetAId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetAId").OutputValue')
+export privateSubNetAId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetAId").OutputValue')
 echo $privateSubNetAId
 yq -i e '.signoz-app.private-subnet-a-id |= env(privateSubNetAId)' signoz-ecs-config.yml
 
-export privateSubNetBId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetBId").OutputValue')
+export privateSubNetBId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetBId").OutputValue')
 echo $privateSubNetBId
 yq -i e '.signoz-app.private-subnet-b-id |= env(privateSubNetBId)' signoz-ecs-config.yml
 
-export clickhouseHost=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="ClickhouseDnsHost").OutputValue')
+export clickhouseHost=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="ClickhouseDnsHost").OutputValue')
 echo $clickhouseHost
 yq -i e '.signoz-app.clickhouse-host-name |= env(clickhouseHost)' signoz-ecs-config.yml
 
