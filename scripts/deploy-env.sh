@@ -7,7 +7,7 @@ copilot app init $AppName
 
 #creating a clickhouse cluster
 
-envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)
+envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
 [ -z "$envName" ] && echo "No env name argument is provided" && exit 1
 
 vpcId=$(yq '.signoz-app.vpc-id' signoz-ecs-config.yml)

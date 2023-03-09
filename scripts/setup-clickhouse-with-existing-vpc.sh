@@ -1,5 +1,5 @@
 #!/bin/bash
- clickhouseStackName=$(yq '.signoz-app.clickhouse-stack-name' signoz-ecs-config.yml)
+ clickhouseStackName=$(yq '.signoz-app.clickhouse-stack-name' signoz-ecs-config.yml)-signoz
 [ -z "$clickhouseStackName" ] && echo "No clickhouse service name argument supplied" && exit 1
 
 clickhouseDiskSize=$(yq '.signoz-app.clickhouse-disk-size' signoz-ecs-config.yml)

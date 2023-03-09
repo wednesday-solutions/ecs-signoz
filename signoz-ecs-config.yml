@@ -1,5 +1,6 @@
 signoz-app:
   existing-vpc: "no"
+  more-az: "false"
   otel-service-name: "otel"
   query-servcice-name: "query"
   alert-service-name: "alert"
