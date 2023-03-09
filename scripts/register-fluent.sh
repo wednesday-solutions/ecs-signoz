@@ -24,7 +24,7 @@ region=$(aws configure get region)
 repoName=$(yq '.signoz-app.fluentbit-repo-name' signoz-ecs-config.yml)
 imageName=$(yq '.signoz-app.fluentbit-local-image-name' signoz-ecs-config.yml)
 
-docker build -t $imageName ./base/fluentbit 
+docker build -t $imageName ./copilot/fluentbit 
 
 if [[ $? -ne 0 ]] ; then
     exit 1
@@ -33,7 +33,7 @@ fi
 
 
 
-export imageUrl=$accountId.dkr.ecr.$region.amazonaws.com/fluentbit-repository
+export imageUrl=$accountId.dkr.ecr.$region.amazonaws.com/$repoName
 
 
 
@@ -42,7 +42,7 @@ echo $repoName
 aws ecr get-login-password --region $region | docker login --username AWS --password-stdin $accountId.dkr.ecr.$region.amazonaws.com
 
 aws ecr create-repository --repository-name $repoName --image-scanning-configuration scanOnPush=true --region $region --output json > /dev/null
-docker tag custom-fluent:latest $imageUrl
+docker tag $imageName:latest $imageUrl
 docker push $imageUrl
 
 yq -i e '.signoz-app.fluentbit-image-url |= env(imageUrl)' signoz-ecs-config.yml 
