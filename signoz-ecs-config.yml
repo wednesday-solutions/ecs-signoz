@@ -5,7 +5,7 @@ signoz-app:
   query-servcice-name: "query"
   alert-service-name: "alert"
   frontend-service-name: "frontend"
-  clickhouse-host-name: "ip-10-1-70-141.ap-southeast-1.compute.internal"
+  clickhouse-host-name: ""
   environment-name: "dev"
   application-name: "signoz-deploy"
   clickhouse-stack-name: "clickhouse-ex"
