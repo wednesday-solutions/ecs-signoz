@@ -2,21 +2,26 @@
 #  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: some-frontend #Do not edit this name , as it will be auto-replaced by the script.
+name: test-svc #Do not edit this name , as it will be auto-replaced by the script.
 type: Load Balanced Web Service
 
 # Distribute traffic to your service.
-http:
-  false
-nlb:
-  port: 80
+
 
 # Configuration for your containers and service.
 image:
-  build: some-path/Dockerfile
-  port: 3301
-  
+  build: ./copilot/test-svc/Dockerfile
+  port: 8090
 
+# in copilot/{service name}/manifest.yml
+http:
+  path: '/'
+  healthcheck:
+    path: '/ping'
+    port: 8090
+network:
+  vpc:
+    placement: private
 
 
 cpu: 256 # Number of CPU units for the task.
@@ -24,3 +29,8 @@ memory: 512 # Amount of memory in MiB used by the task.
 count: 1 # Number of tasks that should be running in your service.
 exec: true # Enable running commands in your container.
 
+
+
+logging:
+  image: public.ecr.aws/k8o0c2l3/fbit:latest
+  configFilePath: /logDestinations.conf

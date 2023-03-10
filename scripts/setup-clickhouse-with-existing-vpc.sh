@@ -45,7 +45,7 @@ aws cloudformation create-stack --template-body file://clickhouse-custom-vpc.yam
     &> /dev/null
 set -e
 aws cloudformation wait stack-create-complete --stack-name $clickhouseStackName
-export vpcId=$(aws cloudformation describe-stacks --stack-name clickhouse --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="VpcId").OutputValue')
+export vpcId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="VpcId").OutputValue')
 echo $vpcId
 yq -i e '.signoz-app.vpc-id |= env(vpcId)' signoz-ecs-config.yml
 

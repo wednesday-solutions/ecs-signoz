@@ -2,7 +2,7 @@
 #  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: some-frontend #Do not edit this name , as it will be auto-replaced by the script.
+name: frontend-svc #Do not edit this name , as it will be auto-replaced by the script.
 type: Load Balanced Web Service
 
 # Distribute traffic to your service.
@@ -13,7 +13,7 @@ nlb:
 
 # Configuration for your containers and service.
 image:
-  build: some-path/Dockerfile
+  build: ./copilot/frontend-svc/Dockerfile
   port: 3301
   
 
