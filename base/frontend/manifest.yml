@@ -7,9 +7,8 @@ type: Load Balanced Web Service
 
 # Distribute traffic to your service.
 http:
-  false
-nlb:
-  port: 3301
+  path: '/'
+  healthcheck: '/'
 
 # Configuration for your containers and service.
 image:
