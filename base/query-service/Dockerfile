@@ -12,7 +12,7 @@ ENV DEPLOYMENT_TYPE=docker-standalone-amd
 
 
 Copy ./prometheus.yml /root/config/prometheus.yml
-COPY ./dashboards /root/config/dashboards
+COPY ./dashboards/ /root/config/dashboards
 COPY ./data/signoz/ /var/lib/signoz/
 CMD ["-config=/root/config/prometheus.yml"]
 
