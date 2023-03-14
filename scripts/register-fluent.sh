@@ -3,7 +3,7 @@
 
 
 
-otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' signoz-ecs-config.yml)
+otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' output.yml)
 [ -z "$otelEndpoint" ] && echo "No otel endpoint present " && exit 1
 
 
