@@ -3,7 +3,7 @@
 
 
 
-otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' output.yml)
+otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' signoz-ecs-config.yml)
 [ -z "$otelEndpoint" ] && echo "No otel endpoint present " && exit 1
 
 
@@ -24,7 +24,7 @@ region=$(aws configure get region)
 repoName=$(yq '.signoz-app.fluentbitConf.repoName' signoz-ecs-config.yml)
 imageName=$(yq '.signoz-app.fluentbitConf.localImageName' signoz-ecs-config.yml)
 
-docker build --tag $imageName ./copilot/fluentbit 
+docker build -t $imageName ./copilot/fluentbit 
 
 if [[ $? -ne 0 ]] ; then
     exit 1
