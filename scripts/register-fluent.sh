@@ -3,7 +3,7 @@
 
 
 
-otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' signoz-ecs-config.yml)
+otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' output.yml)
 [ -z "$otelEndpoint" ] && echo "No otel endpoint present " && exit 1
 
 
@@ -21,10 +21,10 @@ rm copilot/fluentbit/fluentbit.conf-r
 
 accountId=$(aws sts get-caller-identity --output json | jq -r '.Account')
 region=$(aws configure get region)
-repoName=$(yq '.signoz-app.fluentbit-repo-name' signoz-ecs-config.yml)
-imageName=$(yq '.signoz-app.fluentbit-local-image-name' signoz-ecs-config.yml)
+repoName=$(yq '.signoz-app.fluentbitConf.repoName' signoz-ecs-config.yml)
+imageName=$(yq '.signoz-app.fluentbitConf.localImageName' signoz-ecs-config.yml)
 
-docker build -t $imageName ./copilot/fluentbit 
+docker build --tag $imageName ./copilot/fluentbit 
 
 if [[ $? -ne 0 ]] ; then
     exit 1
@@ -45,5 +45,5 @@ aws ecr create-repository --repository-name $repoName --image-scanning-configura
 docker tag $imageName:latest $imageUrl
 docker push $imageUrl
 
-yq -i e '.signoz-app.fluentbit-image-url |= env(imageUrl)' signoz-ecs-config.yml 
+yq -i e '.signoz-app.fluentbitConf.imageUrl |= env(imageUrl)' signoz-ecs-config.yml 
 

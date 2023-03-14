@@ -293,7 +293,7 @@ Resources:
     
       Tags:
        - Key: Name
-         Value: zookeeper-1
+         Value: signoz-zookeeper-1
   
 
   ZookeeperNetworkInterface2:
@@ -338,7 +338,7 @@ Resources:
           
       Tags:
        - Key: Name
-         Value: zookeeper-2                           
+         Value: signoz-zookeeper-2                           
   ZookeeperNetworkInterface3:
 
     Type: AWS::EC2::NetworkInterface
@@ -379,7 +379,7 @@ Resources:
             Encrypted: true          
       Tags:
        - Key: Name
-         Value: zookeeper-3
+         Value: signoz-zookeeper-3
   Ec2NetworkInterfaceClickhouse1:
     DependsOn: ZookeeperEc2Instance1
     Type: AWS::EC2::NetworkInterface
@@ -430,7 +430,7 @@ Resources:
             Encrypted: true    
       Tags:
        - Key: Name
-         Value: clickhouse-1      
+         Value: signoz-clickhouse-1      
 
   Ec2NetworkInterfaceClickhouse2:
     DependsOn: Ec2NetworkInterfaceClickhouse1
@@ -482,7 +482,7 @@ Resources:
             Encrypted: true    
       Tags:
        - Key: Name
-         Value: clickhouse-2   
+         Value: signoz-clickhouse-2   
   Ec2NetworkInterfaceClickhouse3:
     DependsOn: Ec2NetworkInterfaceClickhouse2
     Type: AWS::EC2::NetworkInterface
@@ -533,7 +533,7 @@ Resources:
           DeviceIndex: "0"
       Tags:
        - Key: Name
-         Value: clickhouse-3          
+         Value: signoz-clickhouse-3          
 
   
 

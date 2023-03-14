@@ -9,7 +9,9 @@ deploy-existing-copilot-app:
 	./scripts/setup-files.sh
 	./scripts/deploy-service.sh
 	./scripts/register-fluent.sh
-
+deploy-env:
+	./scripts/setup-files.sh
+	./scripts/deploy-env.sh
 deploy-clickhouse:
 	./setup-clickhouse.sh	
 scaffold:
