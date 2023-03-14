@@ -1,0 +1,10 @@
+signoz-app:
+  existingVpc:
+    vpcId: vpc-05c61af4e179f10e3
+    publicSubnetAId: subnet-09fda268febadce08
+    publicSubnetBId: subnet-0eeef2cfbabd4d4a6
+    privateSubnetAId: subnet-09f2cb2e89e8b69b2
+    privateSubnetBId: subnet-0ceb78712547f8a67
+  clickhouseConf:
+    hostName: ip-10-1-70-56.ap-southeast-1.compute.internal
+  otel-service-endpoint: otel-svc.dev-signoz.signoz-4-app.local

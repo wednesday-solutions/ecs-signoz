@@ -10,19 +10,19 @@ copilot app init $AppName
 envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
 [ -z "$envName" ] && echo "No env name argument is provided" && exit 1
 
-vpcId=$(yq '.signoz-app.vpc-id' signoz-ecs-config.yml)
+vpcId=$(yq '.signoz-app.existingVpc.vpcId' output.yml)
 [ -z "$vpcId" ] && echo "please provide a vpc id if you are using an existing vpc" && exit 1    
 
-publicSubnetAId=$(yq '.signoz-app.public-subnet-a-id' signoz-ecs-config.yml)
+publicSubnetAId=$(yq '.signoz-app.existingVpc.publicSubnetAId' output.yml)
 [ -z "$publicSubnetAId" ] && echo "please provide id of a public subnet" && exit 1   
 
-publicSubnetBId=$(yq '.signoz-app.public-subnet-b-id' signoz-ecs-config.yml)
+publicSubnetBId=$(yq '.signoz-app.existingVpc.publicSubnetBId' output.yml)
 [ -z "$publicSubnetBId" ] && echo "please provide id of a public subnet" && exit 1   
 
-privateSubnetAId=$(yq '.signoz-app.private-subnet-a-id' signoz-ecs-config.yml)
+privateSubnetAId=$(yq '.signoz-app.existingVpc.privateSubnetAId' output.yml)
 [ -z "$privateSubnetAId" ] && echo "please provide id of a private subnet" && exit 1   
 
-privateSubnetBId=$(yq '.signoz-app.private-subnet-b-id' signoz-ecs-config.yml)
+privateSubnetBId=$(yq '.signoz-app.existingVpc.privateSubnetBId' output.yml)
 [ -z "$privateSubnetBId" ] && echo "please provide id of a private subnet" && exit 1   
 
 echo $privateSubnetAId

@@ -3,7 +3,7 @@
 [ -z "$1" ] && echo "No service name argument supplied" && exit 1
 
 
-export f=$(yq '.signoz-app.fluentbit-image-url' signoz-ecs-config.yml)
+export f=$(yq '.signoz-app.fluentbitConf.imageUrl' signoz-ecs-config.yml)
 echo $f
 mkdir -p copilot/$1
 cp base/sample-app/manifest.yml copilot/$1/manifest.yml

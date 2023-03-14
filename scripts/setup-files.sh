@@ -4,14 +4,15 @@
 appName=$(yq '.signoz-app.application-name' signoz-ecs-config.yml)
 envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
 
-otel=$(yq '.signoz-app.otel-service-name' signoz-ecs-config.yml)
-query=$(yq '.signoz-app.query-servcice-name' signoz-ecs-config.yml)
-alert=$(yq '.signoz-app.alert-service-name' signoz-ecs-config.yml)
-frontend=$(yq '.signoz-app.frontend-service-name' signoz-ecs-config.yml)
+otel=$(yq '.signoz-app.serviceNames.otel' signoz-ecs-config.yml)
+query=$(yq '.signoz-app.serviceNames.query' signoz-ecs-config.yml)
+alert=$(yq '.signoz-app.serviceNames.alert' signoz-ecs-config.yml)
+frontend=$(yq '.signoz-app.serviceNames.frontend' signoz-ecs-config.yml)
 
-clickhouseHost=$(yq '.signoz-app.clickhouse-host-name' signoz-ecs-config.yml)
+clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' signoz-ecs-config.yml)
 
-
+filename=output.yml
+test -f $filename || touch $filename
 
 [ -z "$appName" ] && echo "No app name argument supplied" && exit 1
 
@@ -50,7 +51,7 @@ fi
 
 
 
-clickhouseHost=$(yq '.signoz-app.clickhouse-host-name' signoz-ecs-config.yml)
+clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' output.yml)
 
 
 
@@ -161,3 +162,5 @@ cp -r base/gin-app/ copilot/test-svc/
 sed -i -r "s/some-otel-endpoint/$OtelServiceAddress/" copilot/test-svc/Dockerfile
 
 sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
+
+

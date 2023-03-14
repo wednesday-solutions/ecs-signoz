@@ -23,8 +23,7 @@ http:
     timeout: 10s
     grace_period: 60s
 network:
-  vpc:
-    placement: private
+  connect: true
 
 
 cpu: 256 # Number of CPU units for the task.
