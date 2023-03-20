@@ -7,13 +7,13 @@ otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' output.yml)
 [ -z "$otelEndpoint" ] && echo "No otel endpoint present " && exit 1
 
 
-mkdir -p copilot/fluentbit
-cp -r base/fluentbit/ copilot/fluentbit/
+mkdir -p copilot/sidecar-otel
+cp -r base/sidecar-otel/ copilot/sidecar-otel/
 
 
 
-sed -i -r "s/some-otel-endpoint/$otelEndpoint/" copilot/test-svc/manifest.yml
-rm copilot/test-svc/manifest.yml-r
+sed -i -r "s/some-otel-endpoint/$otelEndpoint/" copilot/sidecar-otel/config.yaml
+rm copilot/fluentbit/fluentbit.conf-r
 
 
 
@@ -21,10 +21,10 @@ rm copilot/test-svc/manifest.yml-r
 
 accountId=$(aws sts get-caller-identity --output json | jq -r '.Account')
 region=$(aws configure get region)
-repoName=$(yq '.signoz-app.fluentbitConf.repoName' signoz-ecs-config.yml)
-imageName=$(yq '.signoz-app.fluentbitConf.localImageName' signoz-ecs-config.yml)
+repoName=$(yq '.signoz-app.otelSidecarConf.repoName' signoz-ecs-config.yml)
+imageName=$(yq '.signoz-app.otelSidecarConf.localImageName' signoz-ecs-config.yml)
 
-docker build -t $imageName ./copilot/fluentbit 
+docker build -t $imageName ./copilot/sidecar-otel
 
 if [[ $? -ne 0 ]] ; then
     exit 1

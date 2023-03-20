@@ -4,12 +4,13 @@ WORKDIR /app
 
 COPY go.mod ./
 
-
+RUN apk add build-base
 COPY *.go ./
 RUN go mod tidy
 ENV SERVICE_NAME=GIN-APP
-ENV OTEL_EXPORTER_OTLP_ENDPOINT=some-otel-endpoint
+ENV OTEL_EXPORTER_OTLP_ENDPOINT=localhost
 ENV INSECURE_MODE=true
+
 RUN go build -o /go-docker-demo
 
 EXPOSE 8090

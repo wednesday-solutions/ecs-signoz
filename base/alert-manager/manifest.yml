@@ -6,8 +6,7 @@ name: some-alert-service #Do not edit this name , as it will be auto-replaced by
 type: Backend Service
 
 # Distribute traffic to your service.
-http:
-  path: '/'
+
 network:
   connect: true
 

@@ -139,55 +139,55 @@ Mappings:
   RegionMap:
     ap-south-1:
       zami: ami-0809f544f4823a3a0
-      cami: ami-0d12b9139d3490271
+      cami: ami-026f0b03ebfcdee97
     eu-north-1:
       zami: ami-09fc4efac65948697
-      cami: ami-04ebc80fe24e85734
+      cami: ami-0ba9c0d41cb3db4c3
     eu-west-3:
       zami: ami-03ca5c2aa466c383c
-      cami: ami-00a05cd5851918906
+      cami: ami-0e0620cef25ba9c96
     eu-west-2:
       zami: ami-04bd48d131d3f2539
-      cami: ami-0785957fddcc0d2aa
+      cami: ami-0e5568943a686ca2c
     eu-west-1:
       zami: ami-05262f77f4a58627b
-      cami: ami-091111613f8008808
+      cami: ami-0e855fb15a0ee5296
     ap-northeast-3:
       zami: ami-062b1b56757905e68
-      cami: ami-0e4b2c29fe8159a81
+      cami: ami-0594ed2b2b41b98e0
     ap-northeast-2:
       zami: ami-0afe4e17974ec8899
-      cami: ami-02d3409151147f9c5
+      cami: ami-0e3f20e4c14ab1ef4
     ap-northeast-1:
       zami: ami-0feb004f34fbeb54b
-      cami: ami-0f9b54ee6703ca6ce
+      cami: ami-0ba4538c54bfeb29f
     ca-central-1:
       zami: ami-08b099378355c22e3
-      cami: ami-07491d6fa2a0be77b
+      cami: ami-0053458d15164baab
     sa-east-1:
       zami: ami-0ff03ff99bb749a43
-      cami: ami-044e5376596be446a
+      cami: ami-0ef28a8c80fdd0c3b
     ap-southeast-1:
       zami: ami-01f3d80c3cb33ce1f
-      cami: ami-00e5a7d31928e4c50
+      cami: ami-0e4c03cdc60c389f2
     ap-southeast-2:
       zami: ami-0bf48169eb245e48b
-      cami: ami-0009d5237bf2761d5
+      cami: ami-0cbb82d6ec67abf8c
     eu-central-1:
       zami: ami-0a560a935e9c50540
-      cami: ami-05bfa434ebc0e3d64
+      cami: ami-032d1741608bbd0f2
     us-east-1:
       zami: ami-0ecb3ad5c6fa31e13
-      cami: ami-0d38a7a8a915f695e
+      cami: ami-03d4495a6f336de73
     us-east-2:
       zami: ami-0573190c8d06c5e52
-      cami: ami-0fdfa72a5786c34b0
+      cami: ami-0e7e15e020ff23cca
     us-west-1:
       zami: ami-0026a926c44ea96be
-      cami: ami-03dcc7f50fa64ec73
+      cami: ami-03be1ed039dd7f61a
     us-west-2:
       zami: ami-07f65c3bfa8f128d0
-      cami: ami-0e51d01a6edba187e
+      cami: ami-024b72a385a6c5a41
 
 
 
@@ -565,6 +565,9 @@ Resources:
       SubnetId: !Ref PrivateSubnetA
       GroupSet: 
         - !Ref ClickhouseSecurityGroup
+  BackupBucket1:
+    Type: AWS::S3::Bucket
+    Description: Bucket to store clickhouse buckets
   EC2InstanceClickhouse1: 
     Type: AWS::EC2::Instance
     DependsOn: Ec2NetworkInterfaceClickhouse1
@@ -586,6 +589,8 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
+            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -595,6 +600,8 @@ Resources:
             z_3: !GetAtt ZookeeperEc2Instance3.PrivateDnsName
             s_num: 1
             r_num: 1
+            bucket_name: !Ref BackupBucket1
+            bucket_region: !Ref "AWS::Region"
 
 
       NetworkInterfaces: 
@@ -618,6 +625,9 @@ Resources:
       SubnetId: !Ref PrivateSubnetB
       GroupSet: 
         - !Ref ClickhouseSecurityGroup
+  BackupBucket2:
+    Type: AWS::S3::Bucket
+    Description: Bucket to store clickhouse backups   
   EC2InstanceClickhouse2: 
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse1
@@ -639,6 +649,8 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
+            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -648,6 +660,8 @@ Resources:
             z_3: !GetAtt ZookeeperEc2Instance3.PrivateDnsName
             s_num: 2
             r_num: 1
+            bucket_name: !Ref BackupBucket2
+            bucket_region: !Ref "AWS::Region"
 
 
       NetworkInterfaces: 
@@ -673,7 +687,10 @@ Resources:
           - !Ref PrivateSubnetC
           - !Ref PrivateSubnetA
       GroupSet: 
-        - !Ref ClickhouseSecurityGroup         
+        - !Ref ClickhouseSecurityGroup       
+  BackupBucket3:
+    Type: AWS::S3::Bucket
+    Description: Bucket to store clickhouse backups
   EC2InstanceClickhouse3: 
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse2
@@ -695,6 +712,8 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
+            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -704,6 +723,8 @@ Resources:
             z_3: !GetAtt ZookeeperEc2Instance3.PrivateDnsName
             s_num: 3
             r_num: 1
+            bucket_name: !Ref BackupBucket3
+            bucket_region: !Ref "AWS::Region"
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
@@ -740,5 +761,15 @@ Outputs:
     Value: !GetAtt PrivateSubnetA.SubnetId
   PrivateSubNetBId:
     Description: Id of public subnet A
-    Value: !GetAtt PrivateSubnetB.SubnetId            
+    Value: !GetAtt PrivateSubnetB.SubnetId      
+  BackupBucket1:
+    Description: bucket name of backup bucket 1
+    Value: !Ref BackupBucket1
+  BackupBucket2:
+    Description: bucket name of backup bucket 2
+    Value: !Ref BackupBucket2
+  BackupBucket3:
+    Description: bucket name of backup bucket 3
+    Value: !Ref BackupBucket3   
+
 
