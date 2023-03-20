@@ -12,13 +12,14 @@ type: Backend Service
 image:
   build: some-path/Dockerfile
   port: 8080
+  healthcheck:
+    command: ["CMD-SHELL", "curl -f localhost:8080/api/v1/health || exit 1"]
+    interval: 15s
+    timeout: 10s
+    grace_period: 60s
 
 # in copilot/{service name}/manifest.yml
-http:
-  path: '/'
-  healthcheck:
-    path: '/api/v1/version'
-    port: 8080
+
   
 network:
   connect: true
@@ -29,7 +30,12 @@ memory: 512 # Amount of memory in MiB used by the task.
 count: 1 # Number of tasks that should be running in your service.
 exec: true # Enable running commands in your container.
 
-
+storage:
+  volumes:
+    signozDBVolume:
+      efs: true
+      path: /var/lib/signoz/
+      read_only: false
 
 taskdef_overrides:
   - path: "ContainerDefinitions[0].PortMappings[-].ContainerPort"

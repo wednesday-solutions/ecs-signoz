@@ -12,16 +12,14 @@ type: Backend Service
 image:
   build: some-path/Dockerfile
   port: 4317
-
-# in copilot/{service name}/manifest.yml
-http:
-  path: '/'
   healthcheck:
-    path: '/'
-    port: 13133
+    command: ["CMD-SHELL", "curl -f http://localhost:13133 || exit 1"]
     interval: 15s
     timeout: 10s
     grace_period: 60s
+
+# in copilot/{service name}/manifest.yml
+
 network:
   connect: true
 

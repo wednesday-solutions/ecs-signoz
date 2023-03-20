@@ -4,8 +4,9 @@
 * [About Signoz](#about-signoz)
 * [Pre-requisites](#pre-requisites)
 * [Config-File](#config-file)
-* [Hosting clichouse using cloudformation](#hosting-a-clickhouse-cluster-using-aws-cloudformation)
+* [Hosting clickhouse using cloudformation](#hosting-a-clickhouse-cluster-using-aws-cloudformation)
 * [Using AWS Copilot](#why-are-we-using-aws-copilot)
+* [Instrumenting our application](#how-to-send-logs-of-your-ecs-fargate-service-to-signoz)
 * [Sending logs](#how-to-send-logs-of-your-ecs-fargate-service-to-signoz)
 * [Deploying signoz on aws ecs](#to-deploy-signoz-on-aws-ecs)
 
@@ -39,7 +40,7 @@ Signoz architecture:
 
 ![signoz architecture](./images/signoz-architecture.png "Title")
 
-We will be hosting our own clickhouse cluster using aws cloudformation and all the services on aws ecs faragate.
+We will be hosting our own clickhouse cluster using aws cloudformation and host all the services on aws ecs faragate.
 
 
 ---
@@ -61,34 +62,36 @@ The signoz-ecs-config.yml files containes all our configuration :
 
 ```yaml
 signoz-app:
-    existing-vpc: "false" # toggle this option true if you want to use your own existing vpc to deploy clickhouse and fargate services
-    otel-service-name: "otel" # name of the otel collector service usied _Signoz_
-    query-servcice-name: "query" # name of the query service usied _Signoz_
-    alert-service-name: "alert" # name of the alert service usied _Signoz_
-    frontend-service-name: "frontend" # name of the frontend service usied _Signoz_
-    clickhouse-host-name: "" # value of the clickhouse host if you are using your own deployment, will be overwritten by our scripts during deployment
-    environment-name: "dev" # environment name to be used by the copilot cli
-    application-name: "signoz-a" # appliation name to be used by copilot cli
-    clickhouse-stack-name: "clickhouse1" # name of the cloudformation stack to deploy clickhouse
-    zookeeper-disk-size: 30 # the disk size of your zookeeper instances
-    clickhouse-disk-size: 30 # the disk size of your clickhouse instances
-    zookeeper-instance-type: "t2.small" # ec2 instance type - for experimenting please use t2.small, otherwise recommended type is m5.large, it is alsoo depended on the expected load
-    clickhouse-instance-type: "t2.small" # ec2 instance type - for experimenting please use t2.small, otherwise recommended type is m5. xlarge, it is alsoo depended on the expected load
-    fluentbit-repo-name: "fluentbit-repository" # name of ecr repository where we will upload a custom docker image , which is used by aws firelens to forward our logs
-    fluentbit-local-image-name: "custom-fluent" # name of the image locally which we will upload to ecr
-    fluentbit-image-url: "" # ecr image url of the custom fluentbit image we have uploaded
-    public-subnet-a-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
-    public-subnet-b-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
-    private-subnet-a-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
-    private-subnet-b-id: "" # please add subnet id if using custom vpc and subnets, will be overwritten by our scripts
-    vpc-id: "" # please add vpc id if using custom vpc and subnets, will be overwritten by our scripts
-    otel-service-endpoint: "" # written by our script..will be the endpoint of the otel collector used by the otel sdk
-
+  application-name: "signoz-1" # name of your aws copilot application, if you want to use an existing app please use the same app name
+  environment-name: "dev" # environment name of your aws copilot application
+  clickhouseConf: # config for the clickhouse cluster
+    stackName: "clickhouse-1"   # name of the cloudformation stack which will create the clickhouse cluster
+    clickhouseDiskSize: 30 # disk size of the ec2 instance of the clickhouse in your clickhouse cluster
+    zookeeperDiskSize: 30 # disk size of the ec2 instance of the zookeeper in your clickhouse cluster
+    zookeeperInstanceType: "t2.small" 
+    instanceType: "t2.small" # instance type of your clickhouse instance
+    hostName: ip-10-1-70-80.ap-southeast-1.compute.internal # host of the clickhouse intance, please keep it black if you want to create your own clickhouse cluster, if your want to use an existing one please replace it with the value of the host of one of your clickhouse shards
+  existingVpc:
+    vpcId: vpc-01e0da29b85cc67dc # please fill the value if you want to use an existing vpcm, if your want to create a new one please keep it empty
+    publicSubnetAId: subnet-0ce4e02fa570f9b70 # subnet of the pre-existing public subnet, otherwise please leave it blank
+    publicSubnetBId: subnet-01e01c7a257809d1f # subnet of the pre-existing public subnet, otherwise please leave it blank
+    privateSubnetAId: subnet-061fdc516a75f5175 # subnet of the pre-existing private subnet, otherwise please leave it blank
+    privateSubnetBId: subnet-02696a7d30f994450 # subnet of the pre-existing private subnet, otherwise please leave it blank
+  fluentbitConf: # the config related to the custom fluentbit image we will be uploading to aws ecr
+    repoName: "fbit-repo" # name of the repo in aws ecr for the fluentbit image
+    localImageName: "fbit" # name of the local fluentbit image we will be creating 
+  otelSidecarConf: # the config related to the custom otel collector image we will be uploading to aws ecr
+    repoName: "sidecar-otel" # name of the repo in aws ecr for the sidecar-otel image
+    localImageName: "sotel"  # name of the local sidecar-otel image we will be creating
+  serviceNames: # name of the variouse signoz service we will be  deploying to aws ecs fargate
+    otel: "otel" # name of the signoz otel collector service
+    query: "query" # naem of the signoz query service
+    alert: "alert" # name of the signoz alert service
+    frontend: "frontend" # name fo the sinoz frontend service
 ```
 
 Config Variables:
 
-* **existing-vpc** - Please use the value false if you want to create new vpc and subnets, but if you have already created vpc and configured subnets change the value to true
 * **vpc-id** - In case your application is already deployed, add the vpc-id within your vpc. If you don’t already have a VPC and subnets configured, `make deploy` will create it for you and add it inline.
 * **public-subnet-*-id** - In case your application is already deployed, add the public subnet-id within your vpc. If you don’t already have a VPC and subnets configured, `make deploy` will create it for you and add it inline.
 * **private-subnet-*-id** - In case your application is already deployed, add the private subnet-id within your vpc. If you don’t already have a VPC and subnets configured, `make deploy` will create it for you and add it inline.
@@ -172,6 +175,29 @@ You will also have to configure vpc id,public and private subnets option in sign
 
 
 ---
+
+### How to instrument your aws ecs fargate service?
+
+Please look at the following [documentation](https://signoz.io/docs/tutorials/) to add instrumentation to your application.
+After you have added the code to your application, we will be abel to generate traces and metrics, and we will have to send this data to the signoz otel collector.
+In our setup we will first configure an otel collector sidecar, which will then forward our data to the signoz otel collector, to do so we will add the following to our manifest file:
+(please ensure you have uploaded the appropriate docker image for otel sidecar to aws ecr, you can get the image uri in output.yml file)
+
+                                    sidecars:
+                                        otel:
+                                            port: 4317
+                                            image: 511522223657.dkr.ecr.ap-southeast-1.amazonaws.com/sidecar-otel:latest # uri of your sidecar otel image
+
+
+We have configured an otel sidecar to forward our metrics and traces instead of directly sending them to signoz otel collector because, this will reduce the latency of our service whenever we are trying to connect to another database or service as we now have to talk to localhost instead of another ecs service.
+
+
+To manuall upload the sidecar otel image use command:
+```
+    make otel-sidecar-upload
+```
+
+
 
 ### How to send logs of your ecs fargate service to signoz?
 

@@ -33,3 +33,5 @@ exec: true # Enable running commands in your container.
 logging:
   image: some-fluentbit-image
   configFilePath: /logDestinations.conf
+  variables: 
+    OTEL_ENDPOINT: some-otel-endpoint

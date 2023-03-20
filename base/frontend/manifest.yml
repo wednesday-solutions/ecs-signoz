@@ -7,7 +7,7 @@ type: Load Balanced Web Service
 
 # Distribute traffic to your service.
 http:
-  path: 'signoz-frontend'
+  path: '/'
   healthcheck: '/'
 
 # Configuration for your containers and service.

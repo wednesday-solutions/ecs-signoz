@@ -108,8 +108,6 @@ rm copilot/$OtelMetricsSvcName/otel-collector-metrics-config.yaml-r
 
 mkdir -p copilot/$QuerySvcName
 cp base/query-service/manifest.yml copilot/$QuerySvcName/manifest.yml
-cp -r base/query-service/dashboards copilot/$QuerySvcName/dashboards
-cp -R base/query-service/data copilot/$QuerySvcName/data
 cp base/query-service/prometheus.yml copilot/$QuerySvcName/prometheus.yml
 cp base/query-service/Dockerfile copilot/$QuerySvcName/Dockerfile
 
@@ -146,6 +144,7 @@ mkdir -p copilot/$FrontendSvcName
 cp base/frontend/manifest.yml copilot/$FrontendSvcName/manifest.yml
 cp -r base/frontend/common/ copilot/$FrontendSvcName/common
 cp base/frontend/Dockerfile copilot/$FrontendSvcName/Dockerfile
+cp base/frontend/nginxReload.sh copilot/$FrontendSvcName/nginxReload.sh
 
 p="${path}${FrontendSvcName}"
 sed -i -r "s/some-frontend/$FrontendSvcName/" copilot/$FrontendSvcName/manifest.yml
@@ -159,7 +158,7 @@ rm copilot/$FrontendSvcName/common/nginx-config.conf-r
 p="${path}test-svc"
 mkdir -p copilot/test-svc
 cp -r base/gin-app/ copilot/test-svc/
-sed -i -r "s/some-otel-endpoint/$OtelServiceAddress/" copilot/test-svc/Dockerfile
+sed -i -r "s/some-otel-endpoint/$OtelServiceAddress/" copilot/test-svc/manifest.yml
 
 sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
 
