@@ -17,3 +17,5 @@ CMD [ "--config=/etc/otel-collector-config.yaml" ]
 EXPOSE 4317
 EXPOSE 4318
 EXPOSE 8889
+EXPOSE 13133
+EXPOSE 24224

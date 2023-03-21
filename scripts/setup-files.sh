@@ -67,6 +67,7 @@ FrontendSvcName="$frontend-svc"
 
 
 OtelServiceAddress="${OtelSvcName}.${envName}.${AppName}.local:4317"
+OtelServiceHost="${OtelSvcName}.${envName}.${AppName}.local"
 OtelServiceAddressInternal="${OtelSvcName}.${envName}.${AppName}.local:8889"
 QueryServiceAddress="${QuerySvcName}.${envName}.${AppName}.local:8080"
 QueryServiceAddressInternal="${QuerySvcName}.${envName}.${AppName}.local:8085"
@@ -158,7 +159,7 @@ rm copilot/$FrontendSvcName/common/nginx-config.conf-r
 p="${path}test-svc"
 mkdir -p copilot/test-svc
 cp -r base/gin-app/ copilot/test-svc/
-sed -i -r "s/some-otel-endpoint/$OtelServiceAddress/" copilot/test-svc/manifest.yml
+sed -i -r "s/some-otel-endpoint/$OtelServiceHost/" copilot/test-svc/manifest.yml
 
 sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
 
