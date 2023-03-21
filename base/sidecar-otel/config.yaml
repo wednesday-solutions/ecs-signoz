@@ -30,7 +30,7 @@ processors:
     timeout: 10s
 exporters:
   otlp/ex:
-    endpoint: otel-svc.dev-signoz.signoz-1-app.local:4317
+    endpoint: some-otel-endpoint:4317
     tls:
       insecure: true
 service:

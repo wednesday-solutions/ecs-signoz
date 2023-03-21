@@ -8,7 +8,7 @@ RUN apk add build-base
 COPY *.go ./
 RUN go mod tidy
 ENV SERVICE_NAME=GIN-APP
-ENV OTEL_EXPORTER_OTLP_ENDPOINT=localhost
+ENV OTEL_EXPORTER_OTLP_ENDPOINT=localhost:4317
 ENV INSECURE_MODE=true
 
 RUN go build -o /go-docker-demo

@@ -6,9 +6,17 @@ name: some-frontend #Do not edit this name , as it will be auto-replaced by the 
 type: Load Balanced Web Service
 
 # Distribute traffic to your service.
-http:
-  path: '/'
-  healthcheck: '/'
+
+http: false
+nlb:
+  healthcheck:
+    port: 80
+    healthy_threshold: 3
+    unhealthy_threshold: 2
+    interval: 15s
+    timeout: 10s
+  port: 80/tcp
+
 
 # Configuration for your containers and service.
 image:

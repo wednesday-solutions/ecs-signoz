@@ -138,56 +138,56 @@ Parameters:
 Mappings:
   RegionMap:
     ap-south-1:
+      cami: ami-0d7e19c9a4c3d4ed5
       zami: ami-0809f544f4823a3a0
-      cami: ami-026f0b03ebfcdee97
     eu-north-1:
+      cami: ami-055a231be6f12eaee
       zami: ami-09fc4efac65948697
-      cami: ami-0ba9c0d41cb3db4c3
     eu-west-3:
+      cami: ami-04f0cdd8e15063c6b
       zami: ami-03ca5c2aa466c383c
-      cami: ami-0e0620cef25ba9c96
     eu-west-2:
+      cami: ami-09c614736c6dfa68c
       zami: ami-04bd48d131d3f2539
-      cami: ami-0e5568943a686ca2c
     eu-west-1:
+      cami: ami-096dc8535587cbd51
       zami: ami-05262f77f4a58627b
-      cami: ami-0e855fb15a0ee5296
     ap-northeast-3:
+      cami: ami-0a432e63384a5ee99
       zami: ami-062b1b56757905e68
-      cami: ami-0594ed2b2b41b98e0
     ap-northeast-2:
+      cami: ami-0749409d29397fe4b
       zami: ami-0afe4e17974ec8899
-      cami: ami-0e3f20e4c14ab1ef4
     ap-northeast-1:
+      cami: ami-0987b97fbcfd9b2bc
       zami: ami-0feb004f34fbeb54b
-      cami: ami-0ba4538c54bfeb29f
     ca-central-1:
+      cami: ami-0de5fe695bc332d06
       zami: ami-08b099378355c22e3
-      cami: ami-0053458d15164baab
     sa-east-1:
+      cami: ami-0fe26f086300f61a0
       zami: ami-0ff03ff99bb749a43
-      cami: ami-0ef28a8c80fdd0c3b
     ap-southeast-1:
+      cami: ami-0a31c033685106ac0
       zami: ami-01f3d80c3cb33ce1f
-      cami: ami-0e4c03cdc60c389f2
     ap-southeast-2:
+      cami: ami-05020854c833daf52
       zami: ami-0bf48169eb245e48b
-      cami: ami-0cbb82d6ec67abf8c
     eu-central-1:
+      cami: ami-021b0a52466d3683d
       zami: ami-0a560a935e9c50540
-      cami: ami-032d1741608bbd0f2
     us-east-1:
+      cami: ami-029b7dd536a21b16f
       zami: ami-0ecb3ad5c6fa31e13
-      cami: ami-03d4495a6f336de73
     us-east-2:
+      cami: ami-029689e34bb285558
       zami: ami-0573190c8d06c5e52
-      cami: ami-0e7e15e020ff23cca
     us-west-1:
+      cami: ami-0ce8eb69d26bc273d
       zami: ami-0026a926c44ea96be
-      cami: ami-03be1ed039dd7f61a
     us-west-2:
+      cami: ami-0ccfdd1e2989dfd6f
       zami: ami-07f65c3bfa8f128d0
-      cami: ami-024b72a385a6c5a41
 
 
 
