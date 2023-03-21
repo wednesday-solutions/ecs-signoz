@@ -9,14 +9,14 @@ type: Load Balanced Web Service
 
 http: false
 nlb:
+  port: 80
+  target_port: 3301
   healthcheck:
-    port: 80
-    healthy_threshold: 3
-    unhealthy_threshold: 2
-    interval: 15s
-    timeout: 10s
-  port: 80/tcp
-
+    port: 3301
+  
+network:
+  vpc:
+    placement: 'private'
 
 # Configuration for your containers and service.
 image:

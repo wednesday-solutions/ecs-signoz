@@ -385,12 +385,16 @@ Resources:
       SubnetId: !Ref PrivateSubnetAId
       GroupSet: 
         - !Ref ClickhouseSecurityGroup
+  BackupBucket1:
+    Type: AWS::S3::Bucket
+    Description: Bucket to store clickhouse buckets
   EC2InstanceClickhouse1: 
     Type: AWS::EC2::Instance
     DependsOn: Ec2NetworkInterfaceClickhouse1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
       KeyName: !Ref NewKeyPair
+
       InstanceType:  !Ref ClickhouseInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -405,6 +409,8 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
+            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -414,6 +420,8 @@ Resources:
             z_3: !GetAtt ZookeeperEc2Instance3.PrivateDnsName
             s_num: 1
             r_num: 1
+            bucket_name: !Ref BackupBucket1
+            bucket_region: !Ref "AWS::Region"
 
 
       NetworkInterfaces: 
@@ -437,13 +445,17 @@ Resources:
       SubnetId: !Ref PrivateSubnetBId
       GroupSet: 
         - !Ref ClickhouseSecurityGroup
+  BackupBucket2:
+    Type: AWS::S3::Bucket
+    Description: Bucket to store clickhouse backups   
   EC2InstanceClickhouse2: 
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
-      KeyName: !Ref NewKeyPair
+
       InstanceType: !Ref ClickhouseInstanceType
+      KeyName: !Ref NewKeyPair
       UserData:
         Fn::Base64 : !Sub 
           - |
@@ -457,6 +469,8 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
+            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -466,6 +480,8 @@ Resources:
             z_3: !GetAtt ZookeeperEc2Instance3.PrivateDnsName
             s_num: 2
             r_num: 1
+            bucket_name: !Ref BackupBucket2
+            bucket_region: !Ref "AWS::Region"
 
 
       NetworkInterfaces: 
@@ -488,12 +504,16 @@ Resources:
       SubnetId: !Ref PrivateSubnetAId
       GroupSet: 
         - !Ref ClickhouseSecurityGroup         
+  BackupBucket3:
+    Type: AWS::S3::Bucket
+    Description: Bucket to store clickhouse backups
   EC2InstanceClickhouse3: 
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse2
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
       KeyName: !Ref NewKeyPair
+
       InstanceType: !Ref ClickhouseInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -508,6 +528,8 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
+            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -517,6 +539,8 @@ Resources:
             z_3: !GetAtt ZookeeperEc2Instance3.PrivateDnsName
             s_num: 3
             r_num: 1
+            bucket_name: !Ref BackupBucket3
+            bucket_region: !Ref "AWS::Region"
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
@@ -525,6 +549,13 @@ Resources:
             DeleteOnTermination: true
             Encrypted: true          
 
+
+      NetworkInterfaces: 
+        - NetworkInterfaceId: !Ref Ec2NetworkInterfaceClickhouse3
+          DeviceIndex: "0"
+      Tags:
+       - Key: Name
+         Value: signoz-clickhouse-3          
 
       NetworkInterfaces: 
         - NetworkInterfaceId: !Ref Ec2NetworkInterfaceClickhouse3
