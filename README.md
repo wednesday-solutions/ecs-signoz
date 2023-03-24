@@ -231,7 +231,7 @@ To manuall upload the fluenbit image use command:
 
 #### If you want to deploy from scratch - to deploy your own vpc,clickhouse cluster and fargate cluster
 
-first configure signoz-ecs-config.yml with appropriate values(do not change the value of existing-vpc=no)
+clone this repository locally then, configure signoz-ecs-config.yml with appropriate values(do not change the value of existing-vpc=no)
 
 Then execute the script with 
 ```
@@ -240,6 +240,7 @@ make deploy
 
 #### If you want to deploy clickhouse cluster and services in your own vpc:
 
+clone this repository locally then, 
 configure vpc id and subnet id in signoz-ecs-config.yml
 make the value of variable existing-vpc to true
 add the vpc id and all the subnets id
@@ -249,6 +250,7 @@ make deploy
 ```
 #### If you have already deployed clickhouse cluster and want to deploy all services in a new vpc and fargate cluster:
 
+clone this repository locally then, 
 configure the clickhouse host in signoz-ecs-config.yml
 
 ```
@@ -257,7 +259,8 @@ make deploy
 
 #### If you have already deployed clickhouse cluster and want to deploy all services in an existing vpc:
 
-configure the clichouse host in signoz-ecs-config.yml
+clone this repository locally then, 
+configure the clickhouse host in signoz-ecs-config.yml
 configure vpc id and subnet id in signoz-ecs-config.yml
 
 ```
@@ -266,6 +269,7 @@ make deploy
 
 #### If you have already configured copilot with an app name and environment(the subnets should be the same as the one where clickhouse cluster is present):
 
+clone this repository locally then, 
 configure the clickhouse host in signoz-ecs-config.yml
 configure vpc id and subnet id in signoz-ecs-config.yml
 

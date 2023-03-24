@@ -13,7 +13,7 @@ cp -r base/sidecar-otel/ copilot/sidecar-otel/
 
 
 sed -i -r "s/some-otel-endpoint/$otelEndpoint/" copilot/sidecar-otel/config.yaml
-rm copilot/fluentbit/fluentbit.conf-r
+
 
 
 

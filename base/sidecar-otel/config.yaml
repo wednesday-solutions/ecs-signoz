@@ -5,24 +5,7 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
-  # filelog/containers:
-  #   include: [  "/var/lib/docker/volumes/*/_data/*.log" ]
-  #   start_at: end
-  #   include_file_path: false
-  #   include_file_name: false
-  #   operators:
-  #     - type: json_parser
-  #       timestamp:
-  #         parse_from: attributes.timestamp
-  #         layout: '%Y-%m-%d %H:%M:%S'
-  #     - type: move
-  #       from: attributes.message
-  #       to: body
-  #     - type: move
-  #       from: attributes.label
-  #       to: attributes.app
-  #     - type: remove
-  #       field: attributes.timestamp
+
 processors:
   batch:
     send_batch_size: 10000
