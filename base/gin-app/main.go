@@ -12,6 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/uptrace/opentelemetry-go-extra/otelsql"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
@@ -108,6 +109,13 @@ func main() {
 		} else {
 			log.Println("added a persons")
 		}
+
+		client := http.Client{
+			Transport: otelhttp.NewTransport(http.DefaultTransport),
+		}
+		req, _ := http.NewRequest("GET", "https://www.google.com/", nil)
+		client.Do(req)
+
 		ctx.Status(200)
 		ctx.JSON(http.StatusOK, gin.H{"hello": "World"})
 	})

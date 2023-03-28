@@ -146,6 +146,7 @@ cp base/frontend/manifest.yml copilot/$FrontendSvcName/manifest.yml
 cp -r base/frontend/common/ copilot/$FrontendSvcName/common
 cp base/frontend/Dockerfile copilot/$FrontendSvcName/Dockerfile
 cp base/frontend/nginxReload.sh copilot/$FrontendSvcName/nginxReload.sh
+cp base/frontend/start.sh copilot/$FrontendSvcName/start.sh
 
 p="${path}${FrontendSvcName}"
 sed -i -r "s/some-frontend/$FrontendSvcName/" copilot/$FrontendSvcName/manifest.yml

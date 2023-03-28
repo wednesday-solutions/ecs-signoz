@@ -216,13 +216,14 @@ To manuall upload the fluenbit image use command:
 ---
 
 
-#### Configuring values in signoz-ecs-config.yml
+### Configuring values in signoz-ecs-config.yml
 
-1. If your want to use an existing vpc keep the value of existing-vpc other than true.
-2. You can change the name of any of the services if you want to.
-3. You can change the name of cloudformation stack of your clickhouse cluster
-4. can change the instance type of your clikhouse or zookeeper hosts
-5. can change the environment name and application name for the copilot cli.
+1. If your want to use an existing vpc please add the existing vpc block in the signoz-ecs-config.yml file.
+2. If you want to use your own clickhouse cluster please mention the clickhouse host in the signoz-ecs-config.yml file(by default a new clickhouse cluster would be created).
+3. If you want to host signoz  in an existing copilot application, just keep your application name and the enviroment same as the one you want to host signoz in.
+4. You can change the name of cloudformation stack of your clickhouse cluster.
+5. can change the instance type of your clikhouse or zookeeper hosts.
+6. You can change the name of various signoz services in the config file.
 
 ### To deploy signoz on aws ecs:
 
