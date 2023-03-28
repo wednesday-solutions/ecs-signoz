@@ -558,20 +558,56 @@ Resources:
       Tags:
        - Key: Name
          Value: signoz-zookeeper-3
+  S3AccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: S3AccessRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3FullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: '*'
+  S3InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      Path: /
+      Roles: 
+       - !Ref S3AccessRole
   Ec2NetworkInterfaceClickhouse1:
     DependsOn: ZookeeperEc2Instance1
     Type: AWS::EC2::NetworkInterface
     Properties:
-      SubnetId: !Ref PrivateSubnetA
+      SubnetId: !Ref PublicSubnetA
       GroupSet: 
         - !Ref ClickhouseSecurityGroup
   BackupBucket1:
     Type: AWS::S3::Bucket
     Description: Bucket to store clickhouse buckets
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - Id: GlacierRule
+            Prefix: glacier
+            Status: Enabled
+            ExpirationInDays: 365
+            Transitions:
+              - TransitionInDays: 15
+                StorageClass: GLACIER
   EC2InstanceClickhouse1: 
     Type: AWS::EC2::Instance
     DependsOn: Ec2NetworkInterfaceClickhouse1
     Properties:
+      IamInstanceProfile: !Ref S3InstanceProfile
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
       KeyName: !Ref NewKeyPair
 
@@ -589,8 +625,9 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
-            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
-            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_name/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo mv /etc/cron.daily/clickhouse-backup.sh /etc/cron.daily/clickhouse-backup
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -622,18 +659,28 @@ Resources:
     DependsOn: Ec2NetworkInterfaceClickhouse1
     Type: AWS::EC2::NetworkInterface
     Properties:
-      SubnetId: !Ref PrivateSubnetB
+      SubnetId: !Ref PublicSubnetB
       GroupSet: 
         - !Ref ClickhouseSecurityGroup
   BackupBucket2:
     Type: AWS::S3::Bucket
-    Description: Bucket to store clickhouse backups   
+    Description: Bucket to store clickhouse backups
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - Id: GlacierRule
+            Prefix: glacier
+            Status: Enabled
+            ExpirationInDays: 365
+            Transitions:
+              - TransitionInDays: 15
+                StorageClass: GLACIER   
   EC2InstanceClickhouse2: 
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
-
+      IamInstanceProfile: !Ref S3InstanceProfile
       InstanceType: !Ref ClickhouseInstanceType
       KeyName: !Ref NewKeyPair
       UserData:
@@ -649,8 +696,9 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
-            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
-            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_name/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo mv /etc/cron.daily/clickhouse-backup.sh /etc/cron.daily/clickhouse-backup
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -685,19 +733,29 @@ Resources:
         'Fn::If':
           -  CreateMoreSubnets
           - !Ref PrivateSubnetC
-          - !Ref PrivateSubnetA
+          - !Ref PublicSubnetA
       GroupSet: 
         - !Ref ClickhouseSecurityGroup       
   BackupBucket3:
     Type: AWS::S3::Bucket
     Description: Bucket to store clickhouse backups
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - Id: GlacierRule
+            Prefix: glacier
+            Status: Enabled
+            ExpirationInDays: 365
+            Transitions:
+              - TransitionInDays: 15
+                StorageClass: GLACIER
   EC2InstanceClickhouse3: 
     Type: AWS::EC2::Instance
     DependsOn: EC2InstanceClickhouse2
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
       KeyName: !Ref NewKeyPair
-
+      IamInstanceProfile: !Ref S3InstanceProfile
       InstanceType: !Ref ClickhouseInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -712,8 +770,9 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
-            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
-            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_name/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo mv /etc/cron.daily/clickhouse-backup.sh /etc/cron.daily/clickhouse-backup
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress

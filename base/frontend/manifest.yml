@@ -31,3 +31,18 @@ memory: 512 # Amount of memory in MiB used by the task.
 count: 1 # Number of tasks that should be running in your service.
 exec: true # Enable running commands in your container.
 
+taskdef_overrides:
+  - path: "ContainerDefinitions[0].PortMappings[-].ContainerPort"
+    value: 13133
+  # PortMappings[1] gets the port mapping added by the previous rule, since by default Copilot creates a port mapping.
+  - path: "ContainerDefinitions[0].PortMappings[1].Protocol"
+    value: "tcp"
+  - path: "ContainerDefinitions[0].PortMappings[1].HostPort"
+    value: 13133
+  - path: "ContainerDefinitions[0].PortMappings[-].ContainerPort"
+    value: 24224
+  # PortMappings[1] gets the port mapping added by the previous rule, since by default Copilot creates a port mapping.
+  - path: "ContainerDefinitions[0].PortMappings[2].Protocol"
+    value: "tcp"
+  - path: "ContainerDefinitions[0].PortMappings[2].HostPort"
+    value: 24224

@@ -23,10 +23,10 @@
 #   vpc-id: "vpc-0e6c48945f3376d3e"
 #   otel-service-endpoint: "otel-svc.dev-signoz.signoz-deploy-app.local"
 signoz-app:
-  application-name: "signoz-v"
+  application-name: "signoz-tr3"
   environment-name: "dev"
   clickhouseConf:
-    stackName: "clickhouse-v"
+    stackName: "clickhouse-tr3"
     clickhouseDiskSize: 30
     zookeeperDiskSize: 30
     zookeeperInstanceType: "t2.small"

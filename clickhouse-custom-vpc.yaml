@@ -409,8 +409,9 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
-            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
-            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_name/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo mv /etc/cron.daily/clickhouse-backup.sh /etc/cron.daily/clickhouse-backup
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -469,8 +470,9 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
-            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
-            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_name/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo mv /etc/cron.daily/clickhouse-backup.sh /etc/cron.daily/clickhouse-backup
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress
@@ -528,8 +530,9 @@ Resources:
             sudo sed -i -r "s/zookeeper-3-host/${z_3}/" /etc/clickhouse-server/config.d/cluster.xml
             sudo sed -i -r "s/shard-num/${s_num}/" /etc/clickhouse-server/config.d/macros.xml
             sudo sed -i -r "s/replica-num/${r_num}/" /etc/clickhouse-server/config.d/macros.xml
-            sudo sed -i -r "s/my-clickhouse-backup-bucket/${bucket_name}/" /etc/clickhouse-backup/config.yml
-            sudo sed -i -r "s/my-clickhouse-region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_name/${bucket_name}/" /etc/clickhouse-backup/config.yml
+            sudo sed -i -r "s/bucket_region/${bucket_region}/" /etc/clickhouse-backup/config.yml
+            sudo mv /etc/cron.daily/clickhouse-backup.sh /etc/cron.daily/clickhouse-backup
             sudo systemctl restart clickhouse-server
           - server_1: !GetAtt Ec2NetworkInterfaceClickhouse1.PrimaryPrivateIpAddress
             server_2: !GetAtt Ec2NetworkInterfaceClickhouse2.PrimaryPrivateIpAddress

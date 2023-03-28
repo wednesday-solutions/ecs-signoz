@@ -9,6 +9,8 @@ type: Backend Service
 
 network:
   connect: true
+  vpc:
+    placement: 'private'
 
 # Configuration for your containers and service.
 image:
