@@ -561,7 +561,7 @@ Resources:
   S3AccessRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: S3AccessRole
+     
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -570,7 +570,7 @@ Resources:
               Service: ec2.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: S3FullAccess
+        - PolicyName: !Join ['-', ['s3fullacess', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
           PolicyDocument:
             Version: '2012-10-17'
             Statement:

@@ -378,6 +378,32 @@ Resources:
       Tags:
        - Key: Name
          Value: signoz-zookeeper-3
+
+  S3AccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+     
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Join ['-', ['s3fullacess', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: '*'
+  S3InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      Path: /
+      Roles: 
+       - !Ref S3AccessRole       
   Ec2NetworkInterfaceClickhouse1:
     DependsOn: ZookeeperEc2Instance1
     Type: AWS::EC2::NetworkInterface
@@ -394,7 +420,7 @@ Resources:
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
       KeyName: !Ref NewKeyPair
-
+      IamInstanceProfile: !Ref S3InstanceProfile
       InstanceType:  !Ref ClickhouseInstanceType
       UserData:
         Fn::Base64 : !Sub 
@@ -454,7 +480,7 @@ Resources:
     DependsOn: EC2InstanceClickhouse1
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
-
+      IamInstanceProfile: !Ref S3InstanceProfile
       InstanceType: !Ref ClickhouseInstanceType
       KeyName: !Ref NewKeyPair
       UserData:
@@ -515,7 +541,7 @@ Resources:
     Properties:
       ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", "cami"]
       KeyName: !Ref NewKeyPair
-
+      IamInstanceProfile: !Ref S3InstanceProfile
       InstanceType: !Ref ClickhouseInstanceType
       UserData:
         Fn::Base64 : !Sub 
