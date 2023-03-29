@@ -60,42 +60,61 @@ We will be hosting our own clickhouse cluster using aws cloudformation and host 
 
 The signoz-ecs-config.yml files containes all our configuration :
 
-```yaml
-signoz-app:
-  application-name: "signoz-1" # name of your aws copilot application, if you want to use an existing app please use the same app name
-  environment-name: "dev" # environment name of your aws copilot application
-  clickhouseConf: # config for the clickhouse cluster
-    stackName: "clickhouse-1"   # name of the cloudformation stack which will create the clickhouse cluster
-    clickhouseDiskSize: 30 # disk size of the ec2 instance of the clickhouse in your clickhouse cluster
-    zookeeperDiskSize: 30 # disk size of the ec2 instance of the zookeeper in your clickhouse cluster
-    zookeeperInstanceType: "t2.small" 
-    instanceType: "t2.small" # instance type of your clickhouse instance
-    hostName: ip-10-1-70-80.ap-southeast-1.compute.internal # host of the clickhouse intance, please keep it black if you want to create your own clickhouse cluster, if your want to use an existing one please replace it with the value of the host of one of your clickhouse shards
-  existingVpc:
-    vpcId: vpc-01e0da29b85cc67dc # please fill the value if you want to use an existing vpcm, if your want to create a new one please keep it empty
-    publicSubnetAId: subnet-0ce4e02fa570f9b70 # subnet of the pre-existing public subnet, otherwise please leave it blank
-    publicSubnetBId: subnet-01e01c7a257809d1f # subnet of the pre-existing public subnet, otherwise please leave it blank
-    privateSubnetAId: subnet-061fdc516a75f5175 # subnet of the pre-existing private subnet, otherwise please leave it blank
-    privateSubnetBId: subnet-02696a7d30f994450 # subnet of the pre-existing private subnet, otherwise please leave it blank
-  fluentbitConf: # the config related to the custom fluentbit image we will be uploading to aws ecr
-    repoName: "fbit-repo" # name of the repo in aws ecr for the fluentbit image
-    localImageName: "fbit" # name of the local fluentbit image we will be creating 
-  otelSidecarConf: # the config related to the custom otel collector image we will be uploading to aws ecr
-    repoName: "sidecar-otel" # name of the repo in aws ecr for the sidecar-otel image
-    localImageName: "sotel"  # name of the local sidecar-otel image we will be creating
-  serviceNames: # name of the variouse signoz service we will be  deploying to aws ecs fargate
-    otel: "otel" # name of the signoz otel collector service
-    query: "query" # naem of the signoz query service
-    alert: "alert" # name of the signoz alert service
-    frontend: "frontend" # name fo the sinoz frontend service
-```
-
-Config Variables:
-
-* **vpc-id** - In case your application is already deployed, add the vpc-id within your vpc. If you don’t already have a VPC and subnets configured, `make deploy` will create it for you and add it inline.
-* **public-subnet-*-id** - In case your application is already deployed, add the public subnet-id within your vpc. If you don’t already have a VPC and subnets configured, `make deploy` will create it for you and add it inline.
-* **private-subnet-*-id** - In case your application is already deployed, add the private subnet-id within your vpc. If you don’t already have a VPC and subnets configured, `make deploy` will create it for you and add it inline.
-* **clickhouse-host-name** - In case you are using a managed clickhouse service or your own cluter addthe host of one of the clickhouse shards of your cluster. If you have not deployed a clickhouse cluster, `make deploy` will create one for you using cloudformation and add it iniline.
+## Configuration
+- ### application-name
+  name of your aws copilot application, if you want to use an existing app please use the same app name
+- ### environment-name
+  "dev" # environment name of your aws copilot application
+- ### clickhouseConf:
+Config for the clickhouse cluster
+  - #### stackName
+    Name of the cloudformation stack which will create the clickhouse cluster
+  - #### clickhouseDiskSize
+    Disk size of the ec2 instance of the clickhouse in your clickhouse cluster
+  - #### zookeeperDiskSize
+    Disk size of the EC2 instance of the zookeeper in your clickhouse cluster
+  - #### zookeeperInstanceType
+    EC2 instance type to provision for Zookeeper
+  - #### instanceType
+    EC2 instance type to provision for the clickhosue shard
+  - #### hostName
+    Host of the clickhouse intance, please keep it black if you want to create your own clickhouse cluster, if your want to use an existing one please replace it with value of the host of one of your clickhouse shards
+- ###  existingVpc:
+  In case you already havee an existing VPC and would like to deploy your application in it, please  add in the required details below
+  - #### vpcId
+    Please fill the value if you want to use an existing vpc, if your want to create a new one please keep it empty
+  - #### publicSubnetAId
+    Subnet of the pre-existing public subnet, otherwise please leave it blank
+  - #### publicSubnetBId
+    Subnet of the pre-existing public subnet, otherwise please leave it blank
+  - #### privateSubnetAId
+    Subnet of the pre-existing private subnet, otherwise please leave it blank
+  - #### privateSubnetBId
+    Subnet of the pre-existing private subnet, otherwise please leave it blank
+- #### fluentbitConf: 
+  The config related to the custom fluentbit image we will be uploading to aws ecr
+  - ####  repoName
+    "fbit-repo" # name of the repo in aws ecr for the fluentbit image
+  - #### localImageName
+    "fbit" # name of the local fluentbit image we will be creating 
+- ### otelSidecarConf: 
+  The config related to the custom otel collector image we will be uploading to aws ecr
+  - #### repoName
+    name of the repo in aws ecr for the sidecar-otel image
+  - #### localImageName
+    name of the local sidecar-otel image we will be creating
+- ### serviceNames
+  name of the variouse signoz service we will be  deploying to aws ecs fargate
+  - ####  otel
+    name of the signoz otel collector service
+  - ####  query
+    name of the signoz query service
+  - ####  alert
+    name of the signoz alert service
+  - ####  frontend
+    name of the sinoz frontend service
+  
+* **clickhouse-host-name** - In case you are using a managed clickhouse service or your own cluter add the host of one of the clickhouse shards of your cluster. If you have not deployed a clickhouse cluster, `make deploy` will create one for you using cloudformation and add it iniline.
 * **fluentbit-repo-name** - To send our logs from the application to signoz we will have to create or own custom fluentbit image, this will be the name of your respository in aws ecr which `make deploy` will create for you.
 
 * **otel-service-endpoint** - Our internal service endpoint of our signoz otel collector, all the servicess we are going to deploy will need to send the open telemetry data to this endpoint. `make deploy` will add this value to the  signoz-ecs-config.yml file
@@ -186,7 +205,7 @@ In our setup we will first configure an otel collector sidecar, which will then 
                                     sidecars:
                                         otel:
                                             port: 4317
-                                            image: 511522223657.dkr.ecr.ap-southeast-1.amazonaws.com/sidecar-otel:latest # uri of your sidecar otel image
+                                            image: <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-1.amazonaws.com/sidecar-otel:latest # uri of your sidecar otel image
 
 
 We have configured an otel sidecar to forward our metrics and traces instead of directly sending them to signoz otel collector because, this will reduce the latency of our service whenever we are trying to connect to another database or service as we now have to talk to localhost instead of another ecs service.
