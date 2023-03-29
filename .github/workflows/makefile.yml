@@ -47,5 +47,8 @@ jobs:
          cat ./signoz-ecs-config.yml
          make deploy
       shell: bash
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      
   
 
