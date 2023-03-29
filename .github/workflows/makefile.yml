@@ -36,5 +36,13 @@ jobs:
         aws-region: ap-southeast-1
     - run: aws --version
       shell: bash
+    - name: setup-yq
+      uses: chrisdickinson/setup-yq@v1.0.0
+    - name: Run script file
+      run: |
+         chmod +x ./scripts/test-config.sh
+         ./scripts/test-config.sh
+         cat ./signoz-ecs-config.yml
+      shell: bash
   
 
