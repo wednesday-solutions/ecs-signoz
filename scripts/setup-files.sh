@@ -9,7 +9,7 @@ query=$(yq '.signoz-app.serviceNames.query' signoz-ecs-config.yml)
 alert=$(yq '.signoz-app.serviceNames.alert' signoz-ecs-config.yml)
 frontend=$(yq '.signoz-app.serviceNames.frontend' signoz-ecs-config.yml)
 
-clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' signoz-ecs-config.yml)
+export clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' signoz-ecs-config.yml)
 
 filename=output.yml
 test -f $filename || touch $filename
@@ -42,18 +42,20 @@ echo "alert manager service name $alert-svc"
 
 echo "frontend $frontend-svc"
 
-# echo "environment name $6"
+echo "starting to deploy clickhouse cluster"
 
 if [ -z "$clickhouseHost" ]
 then
 ./scripts/clickhouse.sh
+else
+yq -i e '.signoz-app.clickhouseConf.hostName |= env(clickhouseHost)' output.yml
 fi
 
 
 
 clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' output.yml)
 
-
+[ -z "$clickhouseHost" ] && echo "error loading clickhouse host" && exit 1
 
 
 
@@ -76,6 +78,7 @@ AlertManagerServiceAddress="${AlertManagerSvcName}.${envName}.${AppName}.local:9
 path=".\/copilot\/"
 
 # setting up config files
+echo "creating copilot folder"
 mkdir -p copilot/$OtelSvcName
 cp base/otel-collector/manifest.yml copilot/$OtelSvcName/manifest.yml
 cp base/otel-collector/Dockerfile copilot/$OtelSvcName/Dockerfile

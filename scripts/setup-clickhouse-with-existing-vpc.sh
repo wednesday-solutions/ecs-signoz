@@ -31,7 +31,7 @@ privateSubnetBId=$(yq '.signoz-app.existingVpc.privateSubnetBId' signoz-ecs-conf
 
 
 
-aws cloudformation validate-template --template-body file://clickhouse-custom-vpc.yaml --no-cli-pager \
+aws cloudformation validate-template --template-body file://clickhouse-custom-vpc.yaml --no-cli-pager 
 aws cloudformation create-stack --template-body file://clickhouse-custom-vpc.yaml --stack-name $clickhouseStackName --capabilities CAPABILITY_IAM --no-cli-pager \
 --parameters ParameterKey=ZookeeperInstanceType,ParameterValue=$zookeeperInstanceType \
     ParameterKey=RootVolumeSize,ParameterValue=$zookeeperDiskSize \
@@ -40,9 +40,8 @@ aws cloudformation create-stack --template-body file://clickhouse-custom-vpc.yam
     ParameterKey=VpcId,ParameterValue=$vpcId\
     ParameterKey=PublicSubnetAId,ParameterValue=$publicSubnetAId\
     ParameterKey=PublicSubnetBId,ParameterValue=$publicSubnetBId\
-    ParameterKey=PrivateSubnetAId,ParameterValue=$privateSubnetAId \ 
-    ParameterKey=PrivateSubnetBId,ParameterValue=$privateSubnetBId \ 
-    &> /dev/null
+    ParameterKey=PrivateSubnetAId,ParameterValue=$privateSubnetAId ParameterKey=PrivateSubnetBId,ParameterValue=$privateSubnetBId
+
 set -e
 aws cloudformation wait stack-create-complete --stack-name $clickhouseStackName
 export vpcId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="VpcId").OutputValue')
