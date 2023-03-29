@@ -24,4 +24,9 @@ jobs:
         workdir: ""    # defaults to "PWD/unfor19-awscli"
     - run: aws --version
       shell: bash
+    - uses: ksivamuthu/aws-copilot-github-action@v0.0.1
+      with:
+        command: install
+    - run: |
+        copilot --version
 
