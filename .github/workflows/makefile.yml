@@ -37,7 +37,7 @@ jobs:
     - run: aws --version
       shell: bash
     - name: setup-yq
-      uses: chrisdickinson/setup-yq@v1.0.0
+      uses: mikefarah/yq@v4.33.1
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     - name: Run script file
