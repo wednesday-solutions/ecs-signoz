@@ -98,7 +98,7 @@ cp base/otel-metrics-collector/manifest.yml copilot/$OtelMetricsSvcName/manifest
 cp base/otel-metrics-collector/otel-collector-metrics-config.yaml copilot/$OtelMetricsSvcName/otel-collector-metrics-config.yaml
 cp base/otel-metrics-collector/Dockerfile copilot/$OtelMetricsSvcName/Dockerfile
 
-
+ls -a
 
 sed -i -r "s/some-otel-metrics-svc-name/$OtelMetricsSvcName/" copilot/$OtelMetricsSvcName/manifest.yml
 
