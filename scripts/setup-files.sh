@@ -9,7 +9,7 @@ query=$(yq '.signoz-app.serviceNames.query' signoz-ecs-config.yml)
 alert=$(yq '.signoz-app.serviceNames.alert' signoz-ecs-config.yml)
 frontend=$(yq '.signoz-app.serviceNames.frontend' signoz-ecs-config.yml)
 
-clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' signoz-ecs-config.yml)
+export clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' signoz-ecs-config.yml)
 
 filename=output.yml
 test -f $filename || touch $filename
@@ -47,13 +47,15 @@ echo "frontend $frontend-svc"
 if [ -z "$clickhouseHost" ]
 then
 ./scripts/clickhouse.sh
+else
+yq -i e '.signoz-app.clickhouseConf.hostName |= env(clickhouseHost)' output.yml
 fi
 
 
 
 clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' output.yml)
 
-
+[ -z "$clickhouseHost" ] && echo "error loading clickhouse host" && exit 1
 
 
 
