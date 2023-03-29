@@ -42,10 +42,10 @@ jobs:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     - name: Run script file
       run: |
-         chmod +x ./scripts/test-config.sh
-         ./scripts/test-config.sh
-         chmod +x ./scripts/setup-files.sh 
-         ./scripts/setup-files.sh 
+          yq -i '.signoz-app.application-name = "test-signoz-$RANDOM"' signoz-ecs-config.yml
+          yq -i '.signoz-app.clickhouseConf.stackName = "test-signoz-$RANDOM"' signoz-ecs-config.yml
+          chmod +x ./scripts/setup-files.sh 
+          ./scripts/setup-files.sh 
       shell: bash
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
