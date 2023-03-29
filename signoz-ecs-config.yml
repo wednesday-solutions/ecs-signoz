@@ -23,15 +23,15 @@
 #   vpc-id: "vpc-0e6c48945f3376d3e"
 #   otel-service-endpoint: "otel-svc.dev-signoz.signoz-deploy-app.local"
 signoz-app:
-  application-name: "signoz-tr3"
+  application-name: "some-signoz"
   environment-name: "dev"
   clickhouseConf:
-    stackName: "clickhouse-tr3"
+    stackName: "some-clickhouse"
     clickhouseDiskSize: 30
     zookeeperDiskSize: 30
     zookeeperInstanceType: "t2.small"
     instanceType: "t2.small"
-    hostName: 
+    hostName: ip-10-1-70-67.ap-southeast-1.compute.internal
 
   fluentbitConf:
     repoName: "fbit-repo"
@@ -44,3 +44,9 @@ signoz-app:
     query: "query"
     alert: "alert"
     frontend: "frontend"
+  existingVpc:
+    vpcId: vpc-072a77b149ff29f42
+    publicSubnetAId: subnet-048d32a7a6f5e7105
+    publicSubnetBId: subnet-0b40cc715357a9899
+    privateSubnetAId: subnet-06ee6ac7a462cec68
+    privateSubnetBId: subnet-078f9cd84330d1425
