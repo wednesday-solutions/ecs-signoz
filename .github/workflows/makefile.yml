@@ -42,8 +42,10 @@ jobs:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     - name: Run script file
       run: |
-          yq -i '.signoz-app.application-name = "test-signoz-env(RANDOM)"' signoz-ecs-config.yml
-          yq -i '.signoz-app.clickhouseConf.stackName = "test-signoz-env(RANDOM)"' signoz-ecs-config.yml
+          b=test-signoz-env-$RANDOM
+          c=test-signoz-env-$RANDOM
+          yq -i '.signoz-app.application-name = (b)' signoz-ecs-config.yml
+          yq -i '.signoz-app.clickhouseConf.stackName = env(c)' signoz-ecs-config.yml
           chmod +x ./scripts/setup-files.sh 
           ./scripts/setup-files.sh 
       shell: bash
