@@ -45,6 +45,7 @@ jobs:
          chmod +x ./scripts/test-config.sh
          ./scripts/test-config.sh
          cat ./signoz-ecs-config.yml
+         make deploy
       shell: bash
   
 
