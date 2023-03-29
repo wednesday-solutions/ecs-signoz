@@ -1,19 +1,19 @@
-### This template allows you to deploy signoz on aws ecs fargate. [(what is signoz?)](https://signoz.io/)
+### This template allows you to deploy SigNoz on aws ecs fargate. [(what is signoz?)](https://signoz.io/)
 
 ## Table of contents
-* [About Signoz](#about-signoz)
+* [About SigNoz](#about-signoz)
 * [Pre-requisites](#pre-requisites)
 * [Config-File](#config-file)
 * [Hosting clickhouse using cloudformation](#hosting-a-clickhouse-cluster-using-aws-cloudformation)
 * [Using AWS Copilot](#why-are-we-using-aws-copilot)
 * [Instrumenting our application](#how-to-send-logs-of-your-ecs-fargate-service-to-signoz)
 * [Sending logs](#how-to-send-logs-of-your-ecs-fargate-service-to-signoz)
-* [Deploying signoz on aws ecs](#to-deploy-signoz-on-aws-ecs)
+* [Deploying SigNoz on aws ecs](#to-deploy-signoz-on-aws-ecs)
 
 
-### About Signoz:
+### About SigNoz:
 
-Signoz provides comprehensive monitoring for your application. It tracks and monitors all the important metrics and logs related to your application, infrastructure, and network, and provides real-time alerts for any issues.
+SigNoz provides comprehensive monitoring for your application. It tracks and monitors all the important metrics and logs related to your application, infrastructure, and network, and provides real-time alerts for any issues.
 
 You can get traces,metrics and logs of your application.
 
@@ -33,10 +33,10 @@ CPU metrics of our sample application in signoz
 
 
 
-Self hosting signoz on aws ecs fargate is also significantly cheaper than using aws native services like xray and cloudwatch to collect application metrics,traces and logs.Signoz consists of a clikhouse cluster and multiple services, hosting them is tedious and inconvenient process but this template allows you to do so using a single command.
+Self hosting SigNoz on aws ecs fargate is also significantly cheaper than using aws native services like xray and cloudwatch to collect application metrics,traces and logs.SigNoz consists of a clikhouse cluster and multiple services, hosting them is tedious and inconvenient process but this template allows you to do so using a single command.
 
 ---
-Signoz architecture:
+SigNoz architecture:
 
 ![signoz architecture](./images/signoz-architecture.png "Title")
 
@@ -64,9 +64,9 @@ The signoz-ecs-config.yml files containes all our configuration :
 - ### application-name
   name of your aws copilot application, if you want to use an existing app please use the same app name
 - ### environment-name
-  "dev" # environment name of your aws copilot application
+  environment name of your aws copilot application
 - ### clickhouseConf:
-Config for the clickhouse cluster
+  Config for the clickhouse cluster
   - #### stackName
     Name of the cloudformation stack which will create the clickhouse cluster
   - #### clickhouseDiskSize
@@ -104,25 +104,15 @@ Config for the clickhouse cluster
   - #### localImageName
     name of the local sidecar-otel image we will be creating
 - ### serviceNames
-  name of the variouse signoz service we will be  deploying to aws ecs fargate
+  name of the variouse SigNoz service we will be  deploying to aws ecs fargate
   - ####  otel
-    name of the signoz otel collector service
+    name of the SigNoz otel collector service
   - ####  query
-    name of the signoz query service
+    name of the SigNoz query service
   - ####  alert
-    name of the signoz alert service
+    name of the SigNoz alert service
   - ####  frontend
-    name of the sinoz frontend service
-  
-* **clickhouse-host-name** - In case you are using a managed clickhouse service or your own cluter add the host of one of the clickhouse shards of your cluster. If you have not deployed a clickhouse cluster, `make deploy` will create one for you using cloudformation and add it iniline.
-* **fluentbit-repo-name** - To send our logs from the application to signoz we will have to create or own custom fluentbit image, this will be the name of your respository in aws ecr which `make deploy` will create for you.
-
-* **otel-service-endpoint** - Our internal service endpoint of our signoz otel collector, all the servicess we are going to deploy will need to send the open telemetry data to this endpoint. `make deploy` will add this value to the  signoz-ecs-config.yml file
-
-
-
-
-
+    name of the SigNoz frontend service
 
 ---
 
@@ -179,7 +169,7 @@ You can use custom ami's for zookeeper or clickhouse instances if your organizat
 ### Why are we using aws copilot?
 
 AWS Copilot CLI simplifies the deployment of your applications to AWS. It automates the process of creating AWS resources, configuring them, and deploying your application. This can save you time and effort compared to manual deployment.It simplifies the deployment of your applications to AWS. It automates the process of creating AWS resources, configuring them, and deploying your application. This can save you time and effort compared to manual deployment.
-Aws copilot will allow us to deploy all our signoz services with minimum configuration
+Aws copilot will allow us to deploy all our SigNoz services with minimum configuration
 
 You are free to use your own custon vpc and subnets, though they should be the same as your clickhouse cluster(if hosting in a private subnet).
 You will also have to configure vpc id,public and private subnets option in signoz-ecs-config.yml file
@@ -198,8 +188,8 @@ You will also have to configure vpc id,public and private subnets option in sign
 ### How to instrument your aws ecs fargate service?
 
 Please look at the following [documentation](https://signoz.io/docs/tutorials/) to add instrumentation to your application.
-After you have added the code to your application, we will be abel to generate traces and metrics, and we will have to send this data to the signoz otel collector.
-In our setup we will first configure an otel collector sidecar, which will then forward our data to the signoz otel collector, to do so we will add the following to our manifest file:
+After you have added the code to your application, we will be abel to generate traces and metrics, and we will have to send this data to the SigNoz otel collector.
+In our setup we will first configure an otel collector sidecar, which will then forward our data to the SigNoz otel collector, to do so we will add the following to our manifest file:
 (please ensure you have uploaded the appropriate docker image for otel sidecar to aws ecr, you can get the image uri in output.yml file)
 
                                     sidecars:
@@ -208,7 +198,7 @@ In our setup we will first configure an otel collector sidecar, which will then 
                                             image: <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-1.amazonaws.com/sidecar-otel:latest # uri of your sidecar otel image
 
 
-We have configured an otel sidecar to forward our metrics and traces instead of directly sending them to signoz otel collector because, this will reduce the latency of our service whenever we are trying to connect to another database or service as we now have to talk to localhost instead of another ecs service.
+We have configured an otel sidecar to forward our metrics and traces instead of directly sending them to SigNoz otel collector because, this will reduce the latency of our service whenever we are trying to connect to another database or service as we now have to talk to localhost instead of another ecs service.
 
 
 To manuall upload the sidecar otel image use command:
@@ -220,8 +210,8 @@ To manuall upload the sidecar otel image use command:
 
 ### How to send logs of your ecs fargate service to signoz?
 
-To send logs of your application to signoz we are going to use [aws firelens](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-launches-firelens-log-router-for-amazon-ecs-and-aws-fargate/).FireLens works with Fluentd and Fluent Bit. We provide the AWS for Fluent Bit image or you can use your own Fluentd or Fluent Bit image. We will create our own custom image where will configure rules which will forward logs from our application to the signoz collector using the fluentforward protocol.
-When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our signoz otel collector to accept logs via firelens.Using the command *make scaffold svcName* we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
+To send logs of your application to SigNoz we are going to use [aws firelens](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-launches-firelens-log-router-for-amazon-ecs-and-aws-fargate/).FireLens works with Fluentd and Fluent Bit. We provide the AWS for Fluent Bit image or you can use your own Fluentd or Fluent Bit image. We will create our own custom image where will configure rules which will forward logs from our application to the SigNoz collector using the fluentforward protocol.
+When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our SigNoz otel collector to accept logs via firelens.Using the command *make scaffold svcName* we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
 ```yaml
                                     logging:
                                         image: public.ecr.aws/k8o0c2l3/fbit:latest
@@ -239,12 +229,12 @@ To manuall upload the fluenbit image use command:
 
 1. If your want to use an existing vpc please add the existing vpc block in the signoz-ecs-config.yml file.
 2. If you want to use your own clickhouse cluster please mention the clickhouse host in the signoz-ecs-config.yml file(by default a new clickhouse cluster would be created).
-3. If you want to host signoz  in an existing copilot application, just keep your application name and the enviroment same as the one you want to host signoz in.
+3. If you want to host SigNoz  in an existing copilot application, just keep your application name and the enviroment same as the one you want to host SigNoz in.
 4. You can change the name of cloudformation stack of your clickhouse cluster.
 5. can change the instance type of your clikhouse or zookeeper hosts.
-6. You can change the name of various signoz services in the config file.
+6. You can change the name of various SigNoz services in the config file.
 
-### To deploy signoz on aws ecs:
+### To deploy SigNoz on aws ecs:
 
 (Please keep the value of clickhouse host blank if you want to deploy a new cluster in your vpc)
 
