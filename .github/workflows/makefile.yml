@@ -45,7 +45,8 @@ jobs:
          chmod +x ./scripts/test-config.sh
          ./scripts/test-config.sh
          ls -a
-         make deploy
+         chmod +x ./scripts/setup-files.sh 
+         ./scripts/setup-files.sh 
       shell: bash
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
