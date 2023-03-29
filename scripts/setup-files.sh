@@ -42,7 +42,7 @@ echo "alert manager service name $alert-svc"
 
 echo "frontend $frontend-svc"
 
-# echo "environment name $6"
+echo "starting to deploy clickhouse cluster"
 
 if [ -z "$clickhouseHost" ]
 then
@@ -78,6 +78,7 @@ AlertManagerServiceAddress="${AlertManagerSvcName}.${envName}.${AppName}.local:9
 path=".\/copilot\/"
 
 # setting up config files
+echo "creating copilot folder"
 mkdir -p copilot/$OtelSvcName
 cp base/otel-collector/manifest.yml copilot/$OtelSvcName/manifest.yml
 cp base/otel-collector/Dockerfile copilot/$OtelSvcName/Dockerfile
