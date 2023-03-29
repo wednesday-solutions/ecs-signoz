@@ -44,7 +44,6 @@ jobs:
       run: |
          chmod +x ./scripts/test-config.sh
          ./scripts/test-config.sh
-         ls -a
          chmod +x ./scripts/setup-files.sh 
          ./scripts/setup-files.sh 
       shell: bash
