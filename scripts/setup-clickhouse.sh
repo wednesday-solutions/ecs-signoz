@@ -18,7 +18,7 @@ clickhouseInstanceType=$(yq '.signoz-app.clickhouseConf.instanceType' signoz-ecs
 
 
 aws cloudformation validate-template --template-body file://clickhouse.yaml --no-cli-pager
-aws cloudformation create-stack --template-body file://clickhouse.yaml --stack-name $clickhouseStackName --no-cli-pager --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=ZookeeperInstanceType,ParameterValue=$zookeeperInstanceType ParameterKey=RootVolumeSize,ParameterValue=$zookeeperDiskSize ParameterKey=ClickhouseInstanceType,ParameterValue=$clickhouseInstanceType ParameterKey=AZMore,ParameterValue=true   &> /dev/null
+aws cloudformation create-stack --template-body file://clickhouse.yaml --stack-name $clickhouseStackName --no-cli-pager --capabilities CAPABILITY_IAM --parameters ParameterKey=ZookeeperInstanceType,ParameterValue=$zookeeperInstanceType ParameterKey=RootVolumeSize,ParameterValue=$zookeeperDiskSize ParameterKey=ClickhouseInstanceType,ParameterValue=$clickhouseInstanceType ParameterKey=AZMore,ParameterValue=true   &> /dev/null
 
 aws cloudformation wait stack-create-complete --stack-name $clickhouseStackName
 export vpcId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="VpcId").OutputValue')

@@ -32,7 +32,7 @@ privateSubnetBId=$(yq '.signoz-app.existingVpc.privateSubnetBId' signoz-ecs-conf
 
 
 aws cloudformation validate-template --template-body file://clickhouse-custom-vpc.yaml --no-cli-pager \
-aws cloudformation create-stack --template-body file://clickhouse-custom-vpc.yaml --stack-name $clickhouseStackName --capabilities CAPABILITY_NAMED_IAM --no-cli-pager \
+aws cloudformation create-stack --template-body file://clickhouse-custom-vpc.yaml --stack-name $clickhouseStackName --capabilities CAPABILITY_IAM --no-cli-pager \
 --parameters ParameterKey=ZookeeperInstanceType,ParameterValue=$zookeeperInstanceType \
     ParameterKey=RootVolumeSize,ParameterValue=$zookeeperDiskSize \
     ParameterKey=ClickhouseInstanceType,ParameterValue=$clickhouseInstanceType \
