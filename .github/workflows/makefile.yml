@@ -22,11 +22,19 @@ jobs:
         arch: amd64    # allowed values: amd64, arm64
         rootdir: ""    # defaults to "PWD"
         workdir: ""    # defaults to "PWD/unfor19-awscli"
-    - run: aws --version
-      shell: bash
+    
     - uses: ksivamuthu/aws-copilot-github-action@v0.0.1
       with:
         command: install
     - run: |
         copilot --version
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-southeast-1
+    - run: aws --version
+      shell: bash
+  
 
