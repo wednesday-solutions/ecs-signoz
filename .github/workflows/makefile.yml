@@ -38,6 +38,8 @@ jobs:
       shell: bash
     - name: setup-yq
       uses: chrisdickinson/setup-yq@v1.0.0
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     - name: Run script file
       run: |
          chmod +x ./scripts/test-config.sh
