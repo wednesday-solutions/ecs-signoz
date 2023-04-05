@@ -45,5 +45,5 @@ aws ecr create-repository --repository-name $repoName --image-scanning-configura
 docker tag $imageName:latest $imageUrl
 docker push $imageUrl
 
-yq -i e '.signoz-app.fluentbitConf.imageUrl |= env(imageUrl)' output.yml 
+yq e -i '.signoz-app.fluentbitConf.imageUrl |= env(imageUrl)' output.yml 
 

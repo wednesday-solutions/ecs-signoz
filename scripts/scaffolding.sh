@@ -12,7 +12,7 @@ cp base/sample-app/manifest.yml copilot/$1/manifest.yml
 
 sed -i -r "s/svc-name/$1/" copilot/$1/manifest.yml
 sed -i -r "s/some-otel-endpoint/$otel/" copilot/$1/manifest.yml
-yq -i e '.logging.image |= env(f)' copilot/$1/manifest.yml
+yq e -i '.logging.image |= env(f)' copilot/$1/manifest.yml
 
 sed -i -r "s/some-path/$p/" copilot/$1/manifest.yml
 rm copilot/$1/manifest.yml-r

@@ -1,0 +1,45 @@
+# Delete the task role resource
+# - op: remove
+#   path: /Resources/TaskRole
+
+# Add a service connect alias
+- op: add
+  path: /Resources/Service/Properties/LoadBalancers
+  value:
+      - ContainerName: frontend-svc
+        ContainerPort: 3301
+        TargetGroupArn:
+          Fn::ImportValue:
+           !Sub '${AppName}-${EnvName}-FrontendLoadBalancer'
+
+      # - Key: ContainerPort
+      #   Value: 3301
+
+      # - Key: TargetGroupArn
+      #   Value: arn:aws:elasticloadbalancing:ap-southeast-1:511522223657:targetgroup/e-sign-ALBTa-WGAD9A6AAASH/a9222c5155cf6460
+         
+
+# - op: replace
+#   path: /Resources/Service/Properties/EnableExecuteCommand
+#   value: true
+
+
+# - op: add
+#   path: /Resources/Service/Properties
+#   value:
+#     NetworkConfiguration:
+#         AwsvpcConfiguration:
+#           AssignPublicIp: DISABLED
+#           Subnets:
+#             Fn::Split:
+#               - ','
+#               - Fn::ImportValue: !Sub '${AppName}-${EnvName}-PrivateSubnets'
+#           SecurityGroups:
+#             - Fn::ImportValue: !Sub '${AppName}-${EnvName}-EnvironmentSecurityGroup'
+#             - Fn::ImportValue: !Sub '${AppName}-${EnvName}-FrontendALBSecurityGroup'
+    
+
+# Replace the task role in the task definition
+# - op: replace
+#   path: /Resources/TaskDefinition/Properties/TaskRoleArn
+#   value: arn:aws:iam::123456789012:role/MyTaskRole

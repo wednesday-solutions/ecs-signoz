@@ -613,5 +613,5 @@ Outputs:
     Value: !Ref PrivateSubnetAId
   PrivateSubNetBId:
     Description: Id of public subnet A
-    Value: !Ref PrivateSubnetAId
+    Value: !Ref PrivateSubnetBId
 

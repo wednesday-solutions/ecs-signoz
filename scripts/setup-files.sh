@@ -48,7 +48,7 @@ if [ -z "$clickhouseHost" ]
 then
 ./scripts/clickhouse.sh
 else
-yq -i e '.signoz-app.clickhouseConf.hostName |= env(clickhouseHost)' output.yml
+yq e -i '.signoz-app.clickhouseConf.hostName |= env(clickhouseHost)' output.yml
 fi
 
 
@@ -147,6 +147,7 @@ rm copilot/$AlertManagerSvcName/Dockerfile-r
 mkdir -p copilot/$FrontendSvcName
 cp base/frontend/manifest.yml copilot/$FrontendSvcName/manifest.yml
 cp -r base/frontend/common/ copilot/$FrontendSvcName/common
+cp -r base/frontend/overrides/ copilot/$FrontendSvcName/overrides
 cp base/frontend/Dockerfile copilot/$FrontendSvcName/Dockerfile
 cp base/frontend/nginxReload.sh copilot/$FrontendSvcName/nginxReload.sh
 cp base/frontend/start.sh copilot/$FrontendSvcName/start.sh
