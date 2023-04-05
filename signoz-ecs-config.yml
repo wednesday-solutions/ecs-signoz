@@ -23,10 +23,10 @@
 #   vpc-id: "vpc-0e6c48945f3376d3e"
 #   otel-service-endpoint: "otel-svc.dev-signoz.signoz-deploy-app.local"
 signoz-app:
-  application-name: "some-signoz"
+  application-name: "tp-signoz"
   environment-name: "dev"
   clickhouseConf:
-    stackName: "some-clickhouse"
+    stackName: "tp-signoz"
     clickhouseDiskSize: 30
     zookeeperDiskSize: 30
     zookeeperInstanceType: "t2.small"
@@ -44,9 +44,9 @@ signoz-app:
     query: "query"
     alert: "alert"
     frontend: "frontend"
-  existingVpc:
-    vpcId: vpc-0a50aa8671712e28a
-    publicSubnetAId: subnet-053fdad58c62af425
-    publicSubnetBId: subnet-025dc3879e4ec80c6
-    privateSubnetAId: subnet-056152f3736b0e096
-    privateSubnetBId: subnet-07fa1b93e8f2a0b04
+  # existingVpc:
+  #   vpcId: vpc-09cc39b8b0fa6b10f
+  #   publicSubnetAId: subnet-0787b5ad8b2d8aa41
+  #   publicSubnetBId: subnet-07d3d63b9c87501b0
+  #   privateSubnetAId: subnet-05870291afed3115e
+  #   privateSubnetBId: subnet-045544de09bff69be

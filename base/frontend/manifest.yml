@@ -3,20 +3,13 @@
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
 name: some-frontend #Do not edit this name , as it will be auto-replaced by the script.
-type: Load Balanced Web Service
+type: Backend Service
 
 # Distribute traffic to your service.
 
-http: false
-nlb:
-  port: 80
-  target_port: 3301
-  healthcheck:
-    port: 3301
+
   
-network:
-  vpc:
-    placement: 'private'
+
 
 # Configuration for your containers and service.
 image:

@@ -46,27 +46,27 @@ set -e
 aws cloudformation wait stack-create-complete --stack-name $clickhouseStackName
 export vpcId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="VpcId").OutputValue')
 echo $vpcId
-yq -i e '.signoz-app.existingVpc.vpcId |= env(vpcId)' output.yml
+yq e -i '.signoz-app.existingVpc.vpcId |= env(vpcId)' output.yml
 
 export publicSubNetAId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetAId").OutputValue')
 echo $publicSubNetAId
-yq -i e '.signoz-app.existingVpc.publicSubnetAId |= env(publicSubNetAId)' output.yml
+yq e -i '.signoz-app.existingVpc.publicSubnetAId |= env(publicSubNetAId)' output.yml
 
 export publicSubNetBId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PublicSubNetBId").OutputValue')
 echo $publicSubNetBId
-yq -i e '.signoz-app.existingVpc.publicSubnetBId |= env(publicSubNetBId)' output.yml
+yq e -i '.signoz-app.existingVpc.publicSubnetBId |= env(publicSubNetBId)' output.yml
 
 export privateSubNetAId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetAId").OutputValue')
 echo $privateSubNetAId
-yq -i e '.signoz-app.existingVpc.privateSubnetAId |= env(privateSubNetAId)' output.yml
+yq e -i '.signoz-app.existingVpc.privateSubnetAId |= env(privateSubNetAId)' output.yml
 
 export privateSubNetBId=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="PrivateSubNetBId").OutputValue')
 echo $privateSubNetBId
-yq -i e '.signoz-app.existingVpc.privateSubnetBId |= env(privateSubNetBId)' output.yml
+yq e -i '.signoz-app.existingVpc.privateSubnetBId |= env(privateSubNetBId)' output.yml
 
 export clickhouseHost=$(aws cloudformation describe-stacks --stack-name $clickhouseStackName --output json | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="ClickhouseDnsHost").OutputValue')
 echo $clickhouseHost
-yq -i e '.signoz-app.clickhouseConf.hostName |= env(clickhouseHost)' output.yml
+yq e -i '.signoz-app.clickhouseConf.hostName |= env(clickhouseHost)' output.yml
 
 
 echo "succesfully setup a clickhouse cluster"

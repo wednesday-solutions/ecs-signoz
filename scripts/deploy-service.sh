@@ -51,7 +51,7 @@ FrontendSvcName="$frontend-svc"
 
 export OtelServiceAddress="${OtelSvcName}.${envName}.${AppName}.local:4317"
 export Osa="${OtelSvcName}.${envName}.${AppName}.local"
-yq -i e '.signoz-app.otel-service-endpoint |= env(Osa)' output.yml 
+yq e -i '.signoz-app.otel-service-endpoint |= env(Osa)' output.yml 
 # OtelServiceAddressInternal="${OtelSvcName}.${envName}.${AppName}.local:8889"
 # QueryServiceAddress="${QuerySvcName}.${envName}.${AppName}.local:8080"
 # QueryServiceAddressInternal="${QuerySvcName}.${envName}.${AppName}.local:8085"
@@ -68,5 +68,15 @@ copilot svc init -a "$AppName" -t "Backend Service" -n "$QuerySvcName"
 copilot svc  deploy --name "$QuerySvcName" -e "$envName" 
 copilot svc init -a "$AppName" -t "Backend Service" -n "$AlertManagerSvcName"
 copilot svc deploy --name "$AlertManagerSvcName" -e "$envName" 
-copilot svc init -a "$AppName" -t "Load Balanced Web Service" -n "$FrontendSvcName"
+./scripts/loadBalancer.sh
+
+
+
+copilot svc init -a "$AppName" -t "Backend Service" -n "$FrontendSvcName"
 copilot svc deploy --name "$FrontendSvcName" -e "$envName" 
+envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
+albName=$AppName-$envName-FrontendLoadBalancerDNS
+
+export dnsFrontend=$(aws cloudformation list-exports --no-cli-pager --query "Exports[?Name == '$albName'].Value | [0]" )
+echo "visit the fronted on $dnsFrontend"   
+yq e -i '.signoz-app.frontendURL |= env(dnsFrontend)' output.yml
