@@ -170,8 +170,8 @@ ls copilot/
 p="${path}test-svc"
 mkdir -p copilot/test-svc
 cp -r base/gin-app/ copilot/test-svc/
-sed -i -r "s/some-otel-endpoint/$OtelServiceHost/" copilot/test-svc/manifest.yml
+# sed -i -r "s/some-otel-endpoint/$OtelServiceHost/" copilot/test-svc/manifest.yml
 
-sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
+# sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
 
 
