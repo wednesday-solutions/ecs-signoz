@@ -78,16 +78,17 @@ AlertManagerServiceAddress="${AlertManagerSvcName}.${envName}.${AppName}.local:9
 path=".\/copilot\/"
 
 
-ls copilot
+ls -a
 
 
 # setting up config files
 echo "creating copilot folder"
 mkdir -p copilot/$OtelSvcName
+ls -a 
 cp base/otel-collector/manifest.yml copilot/$OtelSvcName/manifest.yml
 cp base/otel-collector/Dockerfile copilot/$OtelSvcName/Dockerfile
 cp base/otel-collector/otel-collector-config.yaml copilot/$OtelSvcName/otel-collector-config.yaml 
-ls /copilot
+
 sed -i -r "s/some-otel-svc-name/$OtelSvcName/" copilot/$OtelSvcName/manifest.yml
 sed -i -r "s/clickhouse-host/$clickhouseHost/" copilot/$OtelSvcName/otel-collector-config.yaml
 p="${path}${OtelSvcName}"
@@ -102,7 +103,7 @@ cp base/otel-metrics-collector/manifest.yml copilot/$OtelMetricsSvcName/manifest
 cp base/otel-metrics-collector/otel-collector-metrics-config.yaml copilot/$OtelMetricsSvcName/otel-collector-metrics-config.yaml
 cp base/otel-metrics-collector/Dockerfile copilot/$OtelMetricsSvcName/Dockerfile
 
-ls -a
+
 
 sed -i -r "s/some-otel-metrics-svc-name/$OtelMetricsSvcName/" copilot/$OtelMetricsSvcName/manifest.yml
 
