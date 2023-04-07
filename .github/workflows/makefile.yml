@@ -49,7 +49,7 @@ jobs:
           yq e -i '.signoz-app.application-name |= env(b)' signoz-ecs-config.yml
           yq e -i '.signoz-app.clickhouseConf.stackName |= env(c)' signoz-ecs-config.yml
           chmod +x ./scripts/setup-files.sh 
-          ./scripts/setup-files.sh 
+          scripts/setup-files.sh 
       shell: bash
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
