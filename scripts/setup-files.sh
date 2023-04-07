@@ -166,6 +166,7 @@ sed -i -r "s/some-query-service/$QueryServiceAddress/" copilot/$FrontendSvcName/
 sed -i -r "s/some-path/$p/" copilot/$FrontendSvcName/manifest.yml
 
 # rm copilot/$FrontendSvcName/manifg
+ls copilot/
 p="${path}test-svc"
 mkdir -p copilot/test-svc
 cp -r base/gin-app/ copilot/test-svc/
