@@ -80,6 +80,7 @@ path=".\/copilot\/"
 
 ls -a
 
+cd copilot
 
 # setting up config files
 echo "creating copilot folder"
