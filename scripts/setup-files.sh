@@ -58,7 +58,7 @@ clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' output.yml)
 [ -z "$clickhouseHost" ] && echo "error loading clickhouse host" && exit 1
 
 
-
+cat output.yml
 
 AppName="$appName-app"
 OtelSvcName="$otel-svc"
