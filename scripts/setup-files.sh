@@ -43,6 +43,7 @@ echo "alert manager service name $alert-svc"
 echo "frontend $frontend-svc"
 
 echo "starting to deploy clickhouse cluster"
+ls base
 
 if [ -z "$clickhouseHost" ]
 then
@@ -78,9 +79,9 @@ AlertManagerServiceAddress="${AlertManagerSvcName}.${envName}.${AppName}.local:9
 path=".\/copilot\/"
 
 
-ls -a
+ls base
 
-cd copilot
+
 
 # setting up config files
 echo "creating copilot folder"
