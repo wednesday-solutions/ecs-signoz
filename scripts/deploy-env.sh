@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export AWS_ACCESS_KEY_ID=$1
+export AWS_SECRET_ACCESS_KEY=$2
 appName=$(yq '.signoz-app.application-name' signoz-ecs-config.yml)
 [ -z "$appName" ] && echo "No app name argument supplied" && exit 1
 AppName="$appName-app"
