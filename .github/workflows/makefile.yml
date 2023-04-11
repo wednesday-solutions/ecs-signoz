@@ -35,17 +35,16 @@ jobs:
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
-    - run: aws --version
-      shell: bash
-    - run: |
-          aws configure set region ap-southeast-1
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws-secret-access-key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    # - run: aws --version
+    #   shell: bash
+    # - run: |
+    #       aws configure set region ap-southeast-1
+    #       aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #       aws configure set aws-secret-access-key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       shell: bash
     - name: setup-yq
       uses: mikefarah/yq@v4.33.1
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
     - name: Run script file
       
       run: |
