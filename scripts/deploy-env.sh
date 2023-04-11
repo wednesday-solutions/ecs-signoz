@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x -e
 
 export AWS_ACCESS_KEY_ID=$1
 export AWS_SECRET_ACCESS_KEY=$2
@@ -30,4 +30,4 @@ privateSubnetBId=$(yq '.signoz-app.existingVpc.privateSubnetBId' output.yml)
 echo $privateSubnetAId
 # creating env from cloudformation provided vpc and subnet
 copilot env init --name $envName --profile default --import-vpc-id $vpcId --import-private-subnets $privateSubnetAId,$privateSubnetBId --import-public-subnets $publicSubnetAId,$publicSubnetBId
-copilot env deploy --name $envName
+copilot env deploy default --name $envName
