@@ -65,6 +65,13 @@ jobs:
       shell: bash
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+    - name: Run script file
+      
+      run: scripts/deploy-env.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      shell: bash
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     # - name: delete all
