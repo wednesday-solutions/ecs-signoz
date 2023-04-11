@@ -57,7 +57,7 @@ jobs:
           chmod +x ./scripts/setup-files.sh
           ls -a 
           scripts/setup-files.sh 
-          # scripts/deploy-env.sh
+          scripts/deploy-env.sh
       shell: bash
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
