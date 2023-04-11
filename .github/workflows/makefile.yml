@@ -37,7 +37,7 @@ jobs:
 
     - run: aws --version
       shell: bash
-    - run: cat ~/.aws/config
+    - run: aws configure set region ap-southeast-1
       shell: bash
     - name: setup-yq
       uses: mikefarah/yq@v4.33.1
