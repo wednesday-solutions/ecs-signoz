@@ -34,9 +34,10 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-southeast-1
-    - run: cat ~/.aws/config
-      shell: bash
+
     - run: aws --version
+      shell: bash
+    - run: cat ~/.aws/config
       shell: bash
     - name: setup-yq
       uses: mikefarah/yq@v4.33.1
