@@ -1,0 +1,50 @@
+# Read the full specification for the "Load Balanced Web Service" type at:
+#  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
+
+# Your service name will be used in naming your resources like log groups, ECS services, etc.
+name: otel-svc #Do not edit this name , as it will be auto-replaced by the script.
+type: Backend Service
+
+# Distribute traffic to your service.
+
+
+# Configuration for your containers and service.
+image:
+  build: ./copilot/otel-svc/Dockerfile
+  port: 4317
+  healthcheck:
+    command: ["CMD-SHELL", "curl -f http://localhost:13133 || exit 1"]
+    interval: 15s
+    timeout: 10s
+    grace_period: 60s
+
+# in copilot/{service name}/manifest.yml
+
+network:
+  connect: true
+  vpc:
+    placement: 'private'
+
+
+cpu: 256 # Number of CPU units for the task.
+memory: 512 # Amount of memory in MiB used by the task.
+count: 1 # Number of tasks that should be running in your service.
+exec: true # Enable running commands in your container.
+
+taskdef_overrides:
+  - path: "ContainerDefinitions[0].PortMappings[-].ContainerPort"
+    value: 13133
+  # PortMappings[1] gets the port mapping added by the previous rule, since by default Copilot creates a port mapping.
+  - path: "ContainerDefinitions[0].PortMappings[1].Protocol"
+    value: "tcp"
+  - path: "ContainerDefinitions[0].PortMappings[1].HostPort"
+    value: 13133
+  - path: "ContainerDefinitions[0].PortMappings[-].ContainerPort"
+    value: 24224
+  # PortMappings[1] gets the port mapping added by the previous rule, since by default Copilot creates a port mapping.
+  - path: "ContainerDefinitions[0].PortMappings[2].Protocol"
+    value: "tcp"
+  - path: "ContainerDefinitions[0].PortMappings[2].HostPort"
+    value: 24224
+  
+

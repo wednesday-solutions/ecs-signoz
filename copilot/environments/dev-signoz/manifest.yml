@@ -1,0 +1,28 @@
+# The manifest for the "dev-signoz" environment.
+# Read the full specification for the "Environment" type at:
+#  https://aws.github.io/copilot-cli/docs/manifest/environment/
+
+# Your environment name will be used in naming your resources like VPC, cluster, etc.
+name: dev-signoz
+type: Environment
+
+# Import your own VPC and subnets or configure how they should be created.
+network:
+  vpc:
+    id: vpc-070ff6ecdeedeb7cd
+    subnets:
+      public:
+        - id: subnet-0dc700e2eb5dbc709
+        - id: subnet-066477c7cbd0b0b65
+      private:
+        - id: subnet-0430aff9f3fe2e6d7
+        - id: subnet-0d2754cb3de8aa9fe
+
+# Configure the load balancers in your environment, once created.
+# http:
+#   public:
+#   private:
+
+# Configure observability for your environment resources.
+observability:
+  container_insights: false
