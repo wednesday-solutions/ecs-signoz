@@ -396,7 +396,9 @@ You will also have to configure vpc id,public and private subnets option in sign
 ## Guides:
 
 
-### How to send instrumentation data from your fargate service to aws signoz?
+### How to send instrumentation data from your existing fargate service to signoz?
+
+If you have an existing service that you want to instrument, you will have to configure an otel sidecar container to a service which will forward all data to the signoz service.
 
 Please look at the following [documentation](https://signoz.io/docs/tutorials/) to add instrumentation to your application.
 After you have added the code to your application, we will be abel to generate traces and metrics, and we will have to send this data to the SigNoz otel collector.
@@ -419,7 +421,9 @@ To manuall upload the sidecar otel image use command:
 
 
 
-### How to send logs of your ecs fargate service to signoz?
+### How to send logs of your existing ecs fargate service to signoz?
+
+If you have an existing service whose logs you want to send to signoz, you will have to configure an aws firelens service which will forward all the logs using fluentforward protocol.
 
 To send logs of your application to SigNoz we are going to use [aws firelens](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-launches-firelens-log-router-for-amazon-ecs-and-aws-fargate/).FireLens works with Fluentd and Fluent Bit. We provide the AWS for Fluent Bit image or you can use your own Fluentd or Fluent Bit image. We will create our own custom image where will configure rules which will forward logs from our application to the SigNoz collector using the fluentforward protocol.
 When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our SigNoz otel collector to accept logs via firelens.Using the command *make scaffold svcName* we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
@@ -435,18 +439,11 @@ To manuall upload the fluenbit image use command:
 
 ---
 
-
-
-
-
-<!-- 
 To scaffold a service with a sample file use command:
 
 ```
 make scaffold $service-name
-``` -->
-
-
+``` 
 
 ### To use your own custom ami's for clickhouse and zookeeper  :
  
@@ -472,4 +469,24 @@ This will stop all the ecs services and your clickhouse cloudformation stack.
 
 ```
 make delete
+```
+
+### To change the backup frequency of the clickhouse cluster:
+
+Currently the clickhouse servers are configured to backup their data to aws s3 every 24 hours, if your want to change the backup frequency you will have to create your own custom clickhouse ami's. To make your own ami's please use our amis (present in clickhouse.yml clouformation file) as the base and then configure the cron job to run at whateverfrequency you desire.
+
+script for backing up the clickhouse databse(configure you cron job to run this script):
+``` bash
+  #!/bin/bash
+  BACKUP_NAME=my_backup_$(date -u +%Y-%m-%dT%H-%M-%S)
+  clickhouse-backup create --config /etc/clickhouse-backup/config.yml $BACKUP_NAME >> /var/log/clickhouse-backup.log
+  if [[ $? != 0 ]]; then
+    echo "clickhouse-backup create $BACKUP_NAME FAILED and return $? exit code"
+  fi
+
+  clickhouse-backup upload --config /etc/clickhouse-backup/config.yml $BACKUP_NAME >> /var/log/clickhouse-backup.log
+  if [[ $? != 0 ]]; then
+    echo "clickhouse-backup upload $BACKUP_NAME FAILED and return $? exit code"
+  fi
+
 ```
