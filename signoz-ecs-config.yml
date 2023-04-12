@@ -44,9 +44,9 @@ signoz-app:
     query: "query"
     alert: "alert"
     frontend: "frontend"
-  existingVpc:
-    vpcId: vpc-09cc39b8b0fa6b10f
-    publicSubnetAId: subnet-0787b5ad8b2d8aa41
-    publicSubnetBId: subnet-07d3d63b9c87501b0
-    privateSubnetAId: subnet-05870291afed3115e
-    privateSubnetBId: subnet-045544de09bff69be
+  # existingVpc:
+  #   vpcId: vpc-09cc39b8b0fa6b10f
+  #   publicSubnetAId: subnet-0787b5ad8b2d8aa41
+  #   publicSubnetBId: subnet-07d3d63b9c87501b0
+  #   privateSubnetAId: subnet-05870291afed3115e
+  #   privateSubnetBId: subnet-045544de09bff69be
