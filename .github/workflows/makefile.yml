@@ -41,6 +41,10 @@ jobs:
       uses: mikefarah/yq@v4.33.1
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+    - name: setup-jq
+      uses: sergeysova/jq-action@v2
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     - name: Run script file
       shell: bash
       run: |
@@ -56,6 +60,7 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           echo  "access key id = $AWS_ACCESS_KEY_ID"
           scripts/deploy-env.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          scripts/deploy-services.sh
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     # - name: Run script file
