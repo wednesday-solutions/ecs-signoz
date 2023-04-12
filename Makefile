@@ -30,4 +30,3 @@ delete-all:
 	./scripts/cleanup-app.sh  
 	./scripts/cleanup-clickhouse.sh 
 
-	role/e-signoz-app-dev-signoz-CFNExecutionRole
