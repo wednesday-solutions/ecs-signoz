@@ -450,17 +450,21 @@ make scaffold $service-name
 
 ### To use your own custom ami's for clickhouse and zookeeper  :
  
-    you can copy the ami's in all region using the script :
+you can copy the ami's in all region using the script :
+
 ```
 ./scripts/copy-ami.sh
 ```
 
-    then you can use the script to get a mapping of all ami's using:
+then you can use the script to get a mapping of all ami's using:
+
 ```
 ./scripts/amimap.sh
 ```
-    Then replace the mappings in the clickhouse.yml cloudformation template
+
+Then replace the mappings in the clickhouse.yml cloudformation template
     
+---
 
 ### For deleting all the services and cleaning up all the resources(is an irreversible action)
 
