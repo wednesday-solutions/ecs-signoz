@@ -60,7 +60,7 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           echo  "access key id = $AWS_ACCESS_KEY_ID"
           scripts/deploy-env.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          scripts/deploy-services.sh
+          scripts/deploy-service.sh
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     # - name: Run script file
