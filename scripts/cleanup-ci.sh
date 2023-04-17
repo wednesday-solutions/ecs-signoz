@@ -4,6 +4,7 @@
 export AWS_ACCESS_KEY_ID=$1
 export AWS_SECRET_ACCESS_KEY=$2
 export fileName=signoz-ecs-config.yml
+[[ ! -z "$var" ]] && export fileName=signoz-ecs-config-$environmentName.yml
 
 appName=$(yq '.signoz-app.application-name' $fileName)
 echo "This will delete your copilot app,environment and all the services"

@@ -4,7 +4,7 @@
 
 System Architecture of everything we are going to deploy.
 
-This is goint to deploy a clickhouse cluster in our vpc and and all the signoz services in our ecs fargate cluster.
+This is going to deploy a clickhouse cluster in our vpc and and all the signoz services in our ecs fargate cluster.
 
 ## Table of contents
 * [About SigNoz](#about-signoz)
@@ -139,11 +139,18 @@ To instrument your applications and send data to SigNoz please refer- https://si
 
 ---
 
+### Configuring a config file with custom prefix
+
+You can also mention the name of a custom config file of the form signoz-ecs-config-**suffix**, you can mention the suffix by defining an environment variable **"$environmentName"** and then the scripts will use the custom config file. you revise a wordy sentence in an effortless manner.
+
+
+---
+
 ### To deploy Signoz:
 
 #### If you want to deploy from scratch - to deploy your own vpc,clickhouse cluster and fargate cluster
 
-clone this repository locally then, configure signoz-ecs-config.yml with appropriate values(do not change the value of existing-vpc=no)
+clone this repository locally then, configure signoz-ecs-config.yml with appropriate values:
 
 ```yml
       signoz-app:
@@ -182,7 +189,6 @@ make deploy
 
 clone this repository locally then, 
 configure vpc id and subnet id in signoz-ecs-config.yml
-make the value of variable existing-vpc to true
 add the vpc id and all the subnets id
 
 ```yml
@@ -335,11 +341,15 @@ In this template we are using cloudformation to host our clickhouse cluster and 
 ### Hosting a clickhouse cluster using aws cloudformation:
 
 The template can be configured if you want to create a new vpc for our clickhouse-cluster or create the cluster in an existing vpc.
-To create the cluster in an existing vpc just toggle the value of existing vpc to true.
-                                signoz-app:
-                                    existing-vpc: "true"
+To create the cluster in an existing vpc just mention the value of existing vpc and subnets in the config file.
+                                existingVpc:
+                                    vpcId: vpc-09cc39b8b0fa6b10f
+                                    publicSubnetAId: subnet-0787b5ad8b2d8aa41
+                                    publicSubnetBId: subnet-07d3d63b9c87501b0
+                                    privateSubnetAId: subnet-05870291afed3115e
+                                    privateSubnetBId: subnet-045544de09bff69be
 
-When existing-vpc option is toggled false it will create the following resources:
+When existing-vpc value is present it will create the following resources:
 
 ![clickhouse.yaml resources diagram ](./images/click-complete.png "Title")
 
@@ -365,7 +375,8 @@ This creates three zookeeper instances and three clickhouse shards in private su
 
 If you are using a managed clickhouse-service, you can mention the host of one of the shards, then will not create it's own clickhouse cluster(on port 9000):
                                 signoz-app:
-                                    clickhouse-host-name: ""
+                                    clickhouseConf:
+                                     hostName: my-clickhouse-host
                                             
 
 You can use custom ami's for zookeeper or clickhouse instances if your organization has special security needs or want to add more functionality (we have made our own [user-data](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) scripts, so each clichouse shard and zookeeper can know about each other at start time). If you do not want to copy your ami's outside of a single region just replace the _ImageId_ field in clickhouse.yaml or clickhous-custom-vpc.yaml cloudformation template. If you want to copy ami's to all region then use *./scripts/copy-ami.sh* script and *./scripts/amimap.sh* to generate the mappings,then replace the existing mappings with the output.
@@ -468,7 +479,7 @@ Then replace the mappings in the clickhouse.yml cloudformation template
 This will stop all the ecs services and your clickhouse cloudformation stack.
 
 ```
-make delete
+make delete-all
 ```
 
 ### To change the backup frequency of the clickhouse cluster:

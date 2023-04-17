@@ -1,6 +1,6 @@
 
 export fileName=signoz-ecs-config.yml
-
+[[ ! -z "$var" ]] && export fileName=signoz-ecs-config-$environmentName.yml
 
 clickhouseCluster=$(yq '.signoz-app.clickhouseConf.stackName' $fileName)-signoz
 echo "This will delete your cloudformation stack"

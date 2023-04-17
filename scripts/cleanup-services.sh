@@ -1,6 +1,7 @@
 echo "This will delete your copilot  services"
 
 export fileName=signoz-ecs-config.yml
+[[ ! -z "$var" ]] && export fileName=signoz-ecs-config-$environmentName.yml
 
 otel=$(yq '.signoz-app.serviceNames.otel' $fileName)
 query=$(yq '.signoz-app.serviceNames.query' $fileName)

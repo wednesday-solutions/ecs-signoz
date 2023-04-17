@@ -3,7 +3,7 @@
 
 #creating a clickhouse cluster
 export fileName=signoz-ecs-config.yml
-
+[[ ! -z "$var" ]] && export fileName=signoz-ecs-config-$environmentName.yml
 
 envName=$(yq '.signoz-app.environment-name' $fileName)-signoz
 [ -z "$envName" ] && echo "No env name argument is provided" && exit 1

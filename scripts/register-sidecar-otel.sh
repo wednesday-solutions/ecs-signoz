@@ -11,6 +11,7 @@ mkdir -p copilot/sidecar-otel
 cp -r base/sidecar-otel/ copilot/sidecar-otel/
 
 export fileName=signoz-ecs-config.yml
+[[ ! -z "$var" ]] && export fileName=signoz-ecs-config-$environmentName.yml
 
 sed -i -r "s/some-otel-endpoint/$otelEndpoint/" copilot/sidecar-otel/config.yaml
 

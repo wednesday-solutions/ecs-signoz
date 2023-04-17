@@ -2,7 +2,7 @@
 
 
 export fileName=signoz-ecs-config.yml
-[! -z "$environmentName" ] && export fileName=signoz-ecs-config.yml-$environmentName
+[[ ! -z "$var" ]] && export fileName=signoz-ecs-config-$environmentName.yml
 appName=$(yq '.signoz-app.application-name' $fileName)
 echo "This will delete your copilot app,environment and all the services"
 
