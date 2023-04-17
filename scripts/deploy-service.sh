@@ -1,14 +1,16 @@
 #!/bin/bash
+export AWS_ACCESS_KEY_ID=$1
+export AWS_SECRET_ACCESS_KEY=$2
+export fileName=signoz-ecs-config.yml
+appName=$(yq '.signoz-app.application-name' $fileName)
+envName=$(yq '.signoz-app.environment-name' $fileName)-signoz
 
-appName=$(yq '.signoz-app.application-name' signoz-ecs-config.yml)
-envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
+otel=$(yq '.signoz-app.serviceNames.otel' $fileName)
+query=$(yq '.signoz-app.serviceNames.query' $fileName)
+alert=$(yq '.signoz-app.serviceNames.alert' $fileName)
+frontend=$(yq '.signoz-app.serviceNames.frontend' $fileName)
 
-otel=$(yq '.signoz-app.serviceNames.otel' signoz-ecs-config.yml)
-query=$(yq '.signoz-app.serviceNames.query' signoz-ecs-config.yml)
-alert=$(yq '.signoz-app.serviceNames.alert' signoz-ecs-config.yml)
-frontend=$(yq '.signoz-app.serviceNames.frontend' signoz-ecs-config.yml)
-
-clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' signoz-ecs-config.yml)
+clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' $fileName)
 
 
 [ -z "$appName" ] && echo "No app name argument supplied" && exit 1
@@ -74,7 +76,7 @@ copilot svc deploy --name "$AlertManagerSvcName" -e "$envName"
 
 copilot svc init -a "$AppName" -t "Backend Service" -n "$FrontendSvcName"
 copilot svc deploy --name "$FrontendSvcName" -e "$envName" 
-envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
+envName=$(yq '.signoz-app.environment-name' $fileName)-signoz
 albName=$AppName-$envName-FrontendLoadBalancerDNS
 
 export dnsFrontend=$(aws cloudformation list-exports --no-cli-pager --query "Exports[?Name == '$albName'].Value | [0]" )

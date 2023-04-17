@@ -10,7 +10,7 @@ otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' output.yml)
 mkdir -p copilot/sidecar-otel
 cp -r base/sidecar-otel/ copilot/sidecar-otel/
 
-
+export fileName=signoz-ecs-config.yml
 
 sed -i -r "s/some-otel-endpoint/$otelEndpoint/" copilot/sidecar-otel/config.yaml
 
@@ -21,8 +21,8 @@ sed -i -r "s/some-otel-endpoint/$otelEndpoint/" copilot/sidecar-otel/config.yaml
 
 accountId=$(aws sts get-caller-identity --output json | jq -r '.Account')
 region=$(aws configure get region)
-repoName=$(yq '.signoz-app.otelSidecarConf.repoName' signoz-ecs-config.yml)
-imageName=$(yq '.signoz-app.otelSidecarConf.localImageName' signoz-ecs-config.yml)
+repoName=$(yq '.signoz-app.otelSidecarConf.repoName' $fileName)
+imageName=$(yq '.signoz-app.otelSidecarConf.localImageName' $fileName)
 
 docker build -t $imageName ./copilot/sidecar-otel
 
@@ -45,5 +45,5 @@ aws ecr create-repository --repository-name $repoName --image-scanning-configura
 docker tag $imageName:latest $imageUrl
 docker push $imageUrl
 
-yq e -i '.signoz-app.fluentbitConf.imageUrl |= env(imageUrl)' output.yml 
+yq e -i '.signoz-app.sidecarOtel.imageUrl |= env(imageUrl)' output.yml 
 

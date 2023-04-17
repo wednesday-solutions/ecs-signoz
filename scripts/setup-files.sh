@@ -1,15 +1,15 @@
 #!/bin/bash
 
+export configFile=signoz-ecs-config.yml
+appName=$(yq '.signoz-app.application-name' $configFile)
+envName=$(yq '.signoz-app.environment-name' $configFile)-signoz
 
-appName=$(yq '.signoz-app.application-name' signoz-ecs-config.yml)
-envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
+otel=$(yq '.signoz-app.serviceNames.otel' $configFile)
+query=$(yq '.signoz-app.serviceNames.query' $configFile)
+alert=$(yq '.signoz-app.serviceNames.alert' $configFile)
+frontend=$(yq '.signoz-app.serviceNames.frontend' $configFile)
 
-otel=$(yq '.signoz-app.serviceNames.otel' signoz-ecs-config.yml)
-query=$(yq '.signoz-app.serviceNames.query' signoz-ecs-config.yml)
-alert=$(yq '.signoz-app.serviceNames.alert' signoz-ecs-config.yml)
-frontend=$(yq '.signoz-app.serviceNames.frontend' signoz-ecs-config.yml)
-
-export clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' signoz-ecs-config.yml)
+export clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' $configFile)
 
 filename=output.yml
 test -f $filename || touch $filename
@@ -43,6 +43,7 @@ echo "alert manager service name $alert-svc"
 echo "frontend $frontend-svc"
 
 echo "starting to deploy clickhouse cluster"
+ls base
 
 if [ -z "$clickhouseHost" ]
 then
@@ -58,7 +59,7 @@ clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' output.yml)
 [ -z "$clickhouseHost" ] && echo "error loading clickhouse host" && exit 1
 
 
-
+cat output.yml
 
 AppName="$appName-app"
 OtelSvcName="$otel-svc"
@@ -77,19 +78,25 @@ AlertManagerServiceAddress="${AlertManagerSvcName}.${envName}.${AppName}.local:9
 
 path=".\/copilot\/"
 
+
+ls base
+
+
+
 # setting up config files
 echo "creating copilot folder"
 mkdir -p copilot/$OtelSvcName
+ls -a 
 cp base/otel-collector/manifest.yml copilot/$OtelSvcName/manifest.yml
 cp base/otel-collector/Dockerfile copilot/$OtelSvcName/Dockerfile
 cp base/otel-collector/otel-collector-config.yaml copilot/$OtelSvcName/otel-collector-config.yaml 
-ls /copilot
+
 sed -i -r "s/some-otel-svc-name/$OtelSvcName/" copilot/$OtelSvcName/manifest.yml
 sed -i -r "s/clickhouse-host/$clickhouseHost/" copilot/$OtelSvcName/otel-collector-config.yaml
 p="${path}${OtelSvcName}"
 sed -i -r "s/some-path/$p/" copilot/$OtelSvcName/manifest.yml
-rm copilot/$OtelSvcName/manifest.yml-r
-rm copilot/$OtelSvcName/otel-collector-config.yaml-r
+# rm copilot/$OtelSvcName/manifest.yml-r
+# rm copilot/$OtelSvcName/otel-collector-config.yaml-r
 
 
 
@@ -98,7 +105,7 @@ cp base/otel-metrics-collector/manifest.yml copilot/$OtelMetricsSvcName/manifest
 cp base/otel-metrics-collector/otel-collector-metrics-config.yaml copilot/$OtelMetricsSvcName/otel-collector-metrics-config.yaml
 cp base/otel-metrics-collector/Dockerfile copilot/$OtelMetricsSvcName/Dockerfile
 
-ls -a
+
 
 sed -i -r "s/some-otel-metrics-svc-name/$OtelMetricsSvcName/" copilot/$OtelMetricsSvcName/manifest.yml
 
@@ -106,8 +113,8 @@ sed -i -r "s/otel-collector-url/$OtelMetricsSvcName/" copilot/$OtelMetricsSvcNam
 sed -i -r "s/clickhouse-host/$clickhouseHost/" copilot/$OtelMetricsSvcName/otel-collector-metrics-config.yaml
 p="${path}${OtelMetricsSvcName}"
 sed -i -r "s/some-path/$p/" copilot/$OtelMetricsSvcName/manifest.yml
-rm copilot/$OtelMetricsSvcName/manifest.yml-r
-rm copilot/$OtelMetricsSvcName/otel-collector-metrics-config.yaml-r
+# rm copilot/$OtelMetricsSvcName/manifest.yml-r
+# rm copilot/$OtelMetricsSvcName/otel-collector-metrics-config.yaml-r
 
 
 mkdir -p copilot/$QuerySvcName
@@ -124,9 +131,9 @@ sed -i -r "s/clickhouse-host/$clickhouseHost/" copilot/$QuerySvcName/prometheus.
 p="${path}${QuerySvcName}"
 sed -i -r "s/some-path/$p/" copilot/$QuerySvcName/manifest.yml
 
-rm copilot/$QuerySvcName/prometheus.yml-r
-rm copilot/$QuerySvcName/manifest.yml-r
-rm copilot/$QuerySvcName/Dockerfile-r
+# rm copilot/$QuerySvcName/prometheus.yml-r
+# rm copilot/$QuerySvcName/manifest.yml-r
+# rm copilot/$QuerySvcName/Dockerfile-r
 
 
 mkdir -p copilot/$AlertManagerSvcName
@@ -140,8 +147,8 @@ sed -i -r "s/some-query-service-url/$QueryServiceAddressInternal/" copilot/$Aler
 sed -i -r "s/some-query-service-url/$QueryServiceAddressInternal/" copilot/$AlertManagerSvcName/Dockerfile
 sed -i -r "s/some-path/$p/" copilot/$AlertManagerSvcName/manifest.yml
 
-rm copilot/$AlertManagerSvcName/manifest.yml-r
-rm copilot/$AlertManagerSvcName/Dockerfile-r
+# rm copilot/$AlertManagerSvcName/manifest.yml-r
+# rm copilot/$AlertManagerSvcName/Dockerfile-r
 
 
 mkdir -p copilot/$FrontendSvcName
@@ -158,14 +165,13 @@ sed -i -r "s/some-alert-manager-url/$AlertManagerServiceAddress/" copilot/$Front
 sed -i -r "s/some-query-service/$QueryServiceAddress/" copilot/$FrontendSvcName/common/nginx-config.conf
 sed -i -r "s/some-path/$p/" copilot/$FrontendSvcName/manifest.yml
 
-rm copilot/$FrontendSvcName/manifest.yml-r
-rm copilot/$FrontendSvcName/common/nginx-config.conf-r
-
+# rm copilot/$FrontendSvcName/manifg
+ls copilot/
 p="${path}test-svc"
 mkdir -p copilot/test-svc
 cp -r base/gin-app/ copilot/test-svc/
-sed -i -r "s/some-otel-endpoint/$OtelServiceHost/" copilot/test-svc/manifest.yml
+# sed -i -r "s/some-otel-endpoint/$OtelServiceHost/" copilot/test-svc/manifest.yml
 
-sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
+# sed -i -r "s/some-path/$p/" copilot/test-svc/manifest.yml
 
 

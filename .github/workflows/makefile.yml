@@ -2,9 +2,11 @@ name: Makefile CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
@@ -12,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - id: install-aws-cli
       uses: unfor19/install-aws-cli-action@v1
@@ -22,42 +24,60 @@ jobs:
         arch: amd64    # allowed values: amd64, arm64
         rootdir: ""    # defaults to "PWD"
         workdir: ""    # defaults to "PWD/unfor19-awscli"
-    
-    - uses: ksivamuthu/aws-copilot-github-action@v0.0.1
-      with:
-        command: install
-    - run: |
-        copilot --version
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-southeast-1
+
     - run: aws --version
       shell: bash
+    - run: |
+          aws configure set region ap-southeast-1
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Setup AWS Copilot
+      uses: softprops/setup-aws-copilot@v1
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+ 
     - name: setup-yq
       uses: mikefarah/yq@v4.33.1
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+    - name: setup-jq
+      uses: sergeysova/jq-action@v2
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     - name: Run script file
-      
+      shell: bash
       run: |
           ls -a
           export b="test-signoz-env-$RANDOM"
           export c="test-signoz-env-$RANDOM"
           yq e -i '.signoz-app.application-name |= env(b)' signoz-ecs-config.yml
           yq e -i '.signoz-app.clickhouseConf.stackName |= env(c)' signoz-ecs-config.yml
-          chmod +x ./scripts/setup-files.sh 
-          ./scripts/setup-files.sh 
-      shell: bash
+          chmod +x ./scripts/setup-files.sh
+          ls -a 
+          scripts/setup-files.sh
+          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          
+          echo  "access key id = $AWS_ACCESS_KEY_ID"
+          scripts/deploy-env.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          scripts/deploy-service.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-    - name: delete all
-      run: |
-          make delete-all
-      shell: bash
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: true  
+    # - name: Run script file
+      
+    #   run: scripts/deploy-env.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    #   shell: bash
+    #   env:
+    #     ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+        # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    # - name: delete all
+    #   run: |
+    #       scripts/cleanup-ci.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #   shell: bash
+    #   env:
+    #     ACTIONS_ALLOW_UNSECURE_COMMANDS: true  
   
 

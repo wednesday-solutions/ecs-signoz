@@ -1,0 +1,15 @@
+signoz-app:
+  existingVpc:
+    vpcId: vpc-0ed408e30f674e9c1
+    publicSubnetAId: subnet-094b5c58c2c8c0b0f
+    publicSubnetBId: subnet-0192f7b89a653c994
+    privateSubnetAId: subnet-0647539d43a197e1d
+    privateSubnetBId: subnet-0744c7a26e5d625d7
+  clickhouseConf:
+    hostName: ip-10-1-70-60.ap-southeast-1.compute.internal
+  otel-service-endpoint: otel-svc.dev-signoz.tprr-signoz-app.local
+  frontendURL: "tprr-LoadB-RUN2NCL0FYOD-1201648184.ap-southeast-1.elb.amazonaws.com"
+  fluentbitConf:
+    imageUrl: 511522223657.dkr.ecr.ap-southeast-1.amazonaws.com/fbit-repo
+  sidecarOtel:
+    imageUrl: 511522223657.dkr.ecr.ap-southeast-1.amazonaws.com/sidecar-otel

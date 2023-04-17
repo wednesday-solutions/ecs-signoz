@@ -1,32 +1,35 @@
 #!/bin/bash
- clickhouseStackName=$(yq '.signoz-app.clickhouseConf.stackName' signoz-ecs-config.yml)-signoz
+
+export fileName=signoz-ecs-config.yml
+
+ clickhouseStackName=$(yq '.signoz-app.clickhouseConf.stackName' $fileName)-signoz
 [ -z "$clickhouseStackName" ] && echo "No clickhouse service name argument supplied" && exit 1
 
-clickhouseDiskSize=$(yq '.signoz-app.clickhouseConf.clickhouseDiskSize' signoz-ecs-config.yml)
+clickhouseDiskSize=$(yq '.signoz-app.clickhouseConf.clickhouseDiskSize' $fileName)
 [ -z "$clickhouseDiskSize" ] && echo "No clickhouse disk size parameter provided will use defautl value 100 gb"
 
-zookeeperDiskSize=$(yq '.signoz-app.clickhouseConf.zookeeperDiskSize' signoz-ecs-config.yml)
+zookeeperDiskSize=$(yq '.signoz-app.clickhouseConf.zookeeperDiskSize' $fileName)
 [ -z "$zookeeperDiskSize" ] && echo "No zookeepr disk size parameter provided will use defautl value 100 gb"
 
-zookeeperInstanceType=$(yq '.signoz-app.clickhouseConf.zookeeperInstanceType' signoz-ecs-config.yml)
+zookeeperInstanceType=$(yq '.signoz-app.clickhouseConf.zookeeperInstanceType' $fileName)
 [ -z "$zookeeperInstanceType" ] && echo "No zookeeper instance parameter provided will use defautl value t2.small"
 
-clickhouseInstanceType=$(yq '.signoz-app.clickhouseConf.instanceType' signoz-ecs-config.yml)
+clickhouseInstanceType=$(yq '.signoz-app.clickhouseConf.instanceType' $fileName)
 [ -z "$clickhouseInstanceType" ] && echo "No clickhouse instance parameter provided will use defautl value t2.small"    
 
-vpcId=$(yq '.signoz-app.existingVpc.vpcId' signoz-ecs-config.yml)
+vpcId=$(yq '.signoz-app.existingVpc.vpcId' $fileName)
 [ -z "$vpcId" ] && echo "please provide a vpc id if you are using an existing vpc" && exit 1    
 
-publicSubnetAId=$(yq '.signoz-app.existingVpc.publicSubnetAId' signoz-ecs-config.yml)
+publicSubnetAId=$(yq '.signoz-app.existingVpc.publicSubnetAId' $fileName)
 [ -z "$publicSubnetAId" ] && echo "please provide id of a public subnet" && exit 1   
 
-publicSubnetBId=$(yq '.signoz-app.existingVpc.publicSubnetBId' signoz-ecs-config.yml)
+publicSubnetBId=$(yq '.signoz-app.existingVpc.publicSubnetBId' $fileName)
 [ -z "$publicSubnetBId" ] && echo "please provide id of a public subnet" && exit 1   
 
-privateSubnetAId=$(yq '.signoz-app.existingVpc.privateSubnetAId' signoz-ecs-config.yml)
+privateSubnetAId=$(yq '.signoz-app.existingVpc.privateSubnetAId' $fileName)
 [ -z "$privateSubnetAId" ] && echo "please provide id of a private subnet" && exit 1   
 
-privateSubnetBId=$(yq '.signoz-app.existingVpc.privateSubnetBId' signoz-ecs-config.yml)
+privateSubnetBId=$(yq '.signoz-app.existingVpc.privateSubnetBId' $fileName)
 [ -z "$privateSubnetBId" ] && echo "please provide id of a private subnet" && exit 1   
 
 

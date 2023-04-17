@@ -1,8 +1,15 @@
 ### This template allows you to deploy SigNoz on aws ecs fargate. [(what is signoz?)](https://signoz.io/)
 
+![latency of api calls of a sample application](./images/sys-arch-4.png "System Architecture")
+
+System Architecture of everything we are going to deploy.
+
+This is goint to deploy a clickhouse cluster in our vpc and and all the signoz services in our ecs fargate cluster.
+
 ## Table of contents
 * [About SigNoz](#about-signoz)
 * [Pre-requisites](#pre-requisites)
+* [Deploying Signoz](#to-deploy-signoz)
 * [Config-File](#config-file)
 * [Hosting clickhouse using cloudformation](#hosting-a-clickhouse-cluster-using-aws-cloudformation)
 * [Using AWS Copilot](#why-are-we-using-aws-copilot)
@@ -94,9 +101,9 @@ The signoz-ecs-config.yml files containes all our configuration :
 - #### fluentbitConf: 
   The config related to the custom fluentbit image we will be uploading to aws ecr
   - ####  repoName
-    "fbit-repo" # name of the repo in aws ecr for the fluentbit image
+    name of the repo in aws ecr for the fluentbit image
   - #### localImageName
-    "fbit" # name of the local fluentbit image we will be creating 
+    name of the local fluentbit image we will be creating 
 - ### otelSidecarConf: 
   The config related to the custom otel collector image we will be uploading to aws ecr
   - #### repoName
@@ -117,6 +124,205 @@ The signoz-ecs-config.yml files containes all our configuration :
 ---
 
 To instrument your applications and send data to SigNoz please refer- https://signoz.io/docs/instrumentation/
+
+---
+
+### Configuring values in signoz-ecs-config.yml
+
+1. If your want to use an existing vpc please add the existing vpc block in the signoz-ecs-config.yml file.
+2. If you want to use your own clickhouse cluster please mention the clickhouse host in the signoz-ecs-config.yml file(by default a new clickhouse cluster would be created).
+3. If you want to host SigNoz  in an existing copilot application, just keep your application name and the enviroment same as the one you want to host SigNoz in.
+4. You can change the name of cloudformation stack of your clickhouse cluster.
+5. can change the instance type of your clikhouse or zookeeper hosts.
+6. You can change the name of various SigNoz services in the config file.
+
+
+---
+
+### To deploy Signoz:
+
+#### If you want to deploy from scratch - to deploy your own vpc,clickhouse cluster and fargate cluster
+
+clone this repository locally then, configure signoz-ecs-config.yml with appropriate values(do not change the value of existing-vpc=no)
+
+```yml
+      signoz-app:
+      application-name: "tp-signoz"
+      environment-name: "dev"
+      clickhouseConf:
+        stackName: "tp-signoz"
+        clickhouseDiskSize: 30
+        zookeeperDiskSize: 30
+        zookeeperInstanceType: "t2.small"
+        instanceType: "t2.small"
+        hostName: 
+
+      fluentbitConf:
+        repoName: "fbit-repo"
+        localImageName: "fbit"
+      otelSidecarConf:
+        repoName: "sidecar-otel"
+        localImageName: "sotel"  
+      serviceNames:
+        otel: "otel"
+        query: "query"
+        alert: "alert"
+        frontend: "frontend"
+```
+your signoz-ecs-config.yml file
+
+
+
+Then execute the script with 
+```
+make deploy
+```
+
+#### If you want to deploy clickhouse cluster and services in your own vpc:
+
+clone this repository locally then, 
+configure vpc id and subnet id in signoz-ecs-config.yml
+make the value of variable existing-vpc to true
+add the vpc id and all the subnets id
+
+```yml
+signoz-app:
+  application-name: "tp-signoz"
+  environment-name: "dev"
+  clickhouseConf:
+    stackName: "tp-signoz"
+    clickhouseDiskSize: 30
+    zookeeperDiskSize: 30
+    zookeeperInstanceType: "t2.small"
+    instanceType: "t2.small"
+    hostName: 
+
+  fluentbitConf:
+    repoName: "fbit-repo"
+    localImageName: "fbit"
+  otelSidecarConf:
+    repoName: "sidecar-otel"
+    localImageName: "sotel"  
+  serviceNames:
+    otel: "otel"
+    query: "query"
+    alert: "alert"
+    frontend: "frontend"
+  existingVpc:
+    vpcId: vpc-09cc39b8b0fa6b10f
+    publicSubnetAId: subnet-0787b5ad8b2d8aa41
+    publicSubnetBId: subnet-07d3d63b9c87501b0
+    privateSubnetAId: subnet-05870291afed3115e
+    privateSubnetBId: subnet-045544de09bff69be
+```
+your signoz-ecs-config.yml file will look like this
+
+
+
+
+```
+make deploy
+```
+#### If you have already deployed clickhouse cluster and want to deploy all services in a new vpc and fargate cluster:
+
+clone this repository locally then, 
+configure the clickhouse host in signoz-ecs-config.yml
+
+
+```yml
+signoz-app:
+  application-name: "tp-signoz"
+  environment-name: "dev"
+  clickhouseConf:
+    stackName: "tp-signoz"
+    clickhouseDiskSize: 30
+    zookeeperDiskSize: 30
+    zookeeperInstanceType: "t2.small"
+    instanceType: "t2.small"
+    hostName: my-clickhouse-host
+
+  fluentbitConf:
+    repoName: "fbit-repo"
+    localImageName: "fbit"
+  otelSidecarConf:
+    repoName: "sidecar-otel"
+    localImageName: "sotel"  
+  serviceNames:
+    otel: "otel"
+    query: "query"
+    alert: "alert"
+    frontend: "frontend"
+
+```
+your signoz-ecs-config.yml file will look like this
+
+
+
+
+
+```
+make deploy
+```
+
+#### If you have already deployed clickhouse cluster and want to deploy all services in an existing vpc:
+
+clone this repository locally then, 
+configure the clickhouse host in signoz-ecs-config.yml
+configure vpc id and subnet id in signoz-ecs-config.yml
+
+
+```yml
+signoz-app:
+  application-name: "tp-signoz"
+  environment-name: "dev"
+  clickhouseConf:
+    stackName: "tp-signoz"
+    clickhouseDiskSize: 30
+    zookeeperDiskSize: 30
+    zookeeperInstanceType: "t2.small"
+    instanceType: "t2.small"
+    hostName: my-clickhouse-host
+
+  fluentbitConf:
+    repoName: "fbit-repo"
+    localImageName: "fbit"
+  otelSidecarConf:
+    repoName: "sidecar-otel"
+    localImageName: "sotel"  
+  serviceNames:
+    otel: "otel"
+    query: "query"
+    alert: "alert"
+    frontend: "frontend"
+  existingVpc:
+    vpcId: vpc-09cc39b8b0fa6b10f
+    publicSubnetAId: subnet-0787b5ad8b2d8aa41
+    publicSubnetBId: subnet-07d3d63b9c87501b0
+    privateSubnetAId: subnet-05870291afed3115e
+    privateSubnetBId: subnet-045544de09bff69be
+```
+your signoz-ecs-config.yml file will look like this
+
+
+
+```
+make deploy
+```
+
+#### If you have already configured copilot with an app name and environment(the subnets should be the same as the one where clickhouse cluster is present):
+
+clone this repository locally then, 
+configure the clickhouse host in signoz-ecs-config.yml
+configure vpc id and subnet id in signoz-ecs-config.yml
+
+```
+make deploy-existing-copilot-app
+```
+
+
+
+
+
 
 ---
 
@@ -144,16 +350,16 @@ When existing-vpc option is toggled true:
 
 You will also have to configure vpc id,public and private subnets option in signoz-ecs-config.yml file
 
-                                signoz-app:
-                                    public-subnet-a-id: ""
-                                    public-subnet-b-id: ""
-                                    private-subnet-a-id: ""
-                                    private-subnet-b-id: ""
-                                    vpc-id: ""
+                                  existingVpc:
+                                    vpcId: vpc-09cc39b8b0fa6b10f
+                                    publicSubnetAId: subnet-0787b5ad8b2d8aa41
+                                    publicSubnetBId: subnet-07d3d63b9c87501b0
+                                    privateSubnetAId: subnet-05870291afed3115e
+                                    privateSubnetBId: subnet-045544de09bff69be
 
 
 ![clickhouse-custom-vpc.yaml resources diagram ](./images/click-custom.png "Title")
-![clickhouse-custom-vpc.yaml parameters](./images/click-custom-param.png "Title")
+
 
 This creates three zookeeper instances and three clickhouse shards in private subnets of your vpc.
 
@@ -174,18 +380,25 @@ Aws copilot will allow us to deploy all our SigNoz services with minimum configu
 You are free to use your own custon vpc and subnets, though they should be the same as your clickhouse cluster(if hosting in a private subnet).
 You will also have to configure vpc id,public and private subnets option in signoz-ecs-config.yml file
 
-                                    signoz-app:
-                                        public-subnet-a-id: ""
-                                        public-subnet-b-id: ""
-                                        private-subnet-a-id: ""
-                                        private-subnet-b-id: ""
-                                        vpc-id: ""
+                                    existingVpc:
+                                      vpcId: vpc-09cc39b8b0fa6b10f
+                                      publicSubnetAId: subnet-0787b5ad8b2d8aa41
+                                      publicSubnetBId: subnet-07d3d63b9c87501b0
+                                      privateSubnetAId: subnet-05870291afed3115e
+                                      privateSubnetBId: subnet-045544de09bff69be
 
 
 
 ---
 
-### How to instrument your aws ecs fargate service?
+
+---
+## Guides:
+
+
+### How to send instrumentation data from your existing fargate service to signoz?
+
+If you have an existing service that you want to instrument, you will have to configure an otel sidecar container to a service which will forward all data to the signoz service.
 
 Please look at the following [documentation](https://signoz.io/docs/tutorials/) to add instrumentation to your application.
 After you have added the code to your application, we will be abel to generate traces and metrics, and we will have to send this data to the SigNoz otel collector.
@@ -208,7 +421,9 @@ To manuall upload the sidecar otel image use command:
 
 
 
-### How to send logs of your ecs fargate service to signoz?
+### How to send logs of your existing ecs fargate service to signoz?
+
+If you have an existing service whose logs you want to send to signoz, you will have to configure an aws firelens service which will forward all the logs using fluentforward protocol.
 
 To send logs of your application to SigNoz we are going to use [aws firelens](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-launches-firelens-log-router-for-amazon-ecs-and-aws-fargate/).FireLens works with Fluentd and Fluent Bit. We provide the AWS for Fluent Bit image or you can use your own Fluentd or Fluent Bit image. We will create our own custom image where will configure rules which will forward logs from our application to the SigNoz collector using the fluentforward protocol.
 When you deploy the template it will automatically deploy our custom fluentbit image to aws ecr and we have configured our SigNoz otel collector to accept logs via firelens.Using the command *make scaffold svcName* we can create a sample manifest file for you with firelens preconfigured. Configuring firelens using aws copilot is extremely easy, just add follwing to the mainfest file
@@ -224,89 +439,29 @@ To manuall upload the fluenbit image use command:
 
 ---
 
-
-### Configuring values in signoz-ecs-config.yml
-
-1. If your want to use an existing vpc please add the existing vpc block in the signoz-ecs-config.yml file.
-2. If you want to use your own clickhouse cluster please mention the clickhouse host in the signoz-ecs-config.yml file(by default a new clickhouse cluster would be created).
-3. If you want to host SigNoz  in an existing copilot application, just keep your application name and the enviroment same as the one you want to host SigNoz in.
-4. You can change the name of cloudformation stack of your clickhouse cluster.
-5. can change the instance type of your clikhouse or zookeeper hosts.
-6. You can change the name of various SigNoz services in the config file.
-
-### To deploy SigNoz on aws ecs:
-
-(Please keep the value of clickhouse host blank if you want to deploy a new cluster in your vpc)
-
-
-#### If you want to deploy from scratch - to deploy your own vpc,clickhouse cluster and fargate cluster
-
-clone this repository locally then, configure signoz-ecs-config.yml with appropriate values(do not change the value of existing-vpc=no)
-
-Then execute the script with 
-```
-make deploy
-```
-
-#### If you want to deploy clickhouse cluster and services in your own vpc:
-
-clone this repository locally then, 
-configure vpc id and subnet id in signoz-ecs-config.yml
-make the value of variable existing-vpc to true
-add the vpc id and all the subnets id
-
-```
-make deploy
-```
-#### If you have already deployed clickhouse cluster and want to deploy all services in a new vpc and fargate cluster:
-
-clone this repository locally then, 
-configure the clickhouse host in signoz-ecs-config.yml
-
-```
-make deploy
-```
-
-#### If you have already deployed clickhouse cluster and want to deploy all services in an existing vpc:
-
-clone this repository locally then, 
-configure the clickhouse host in signoz-ecs-config.yml
-configure vpc id and subnet id in signoz-ecs-config.yml
-
-```
-make deploy
-```
-
-#### If you have already configured copilot with an app name and environment(the subnets should be the same as the one where clickhouse cluster is present):
-
-clone this repository locally then, 
-configure the clickhouse host in signoz-ecs-config.yml
-configure vpc id and subnet id in signoz-ecs-config.yml
-
-```
-make deploy-existing-copilot-app
-```
-
-
 To scaffold a service with a sample file use command:
 
 ```
 make scaffold $service-name
-```
+``` 
 
-To use your own custom ami's for clickhouse and zookeeper  :
+### To use your own custom ami's for clickhouse and zookeeper  :
  
-    you can copy the ami's in all region using the script :
+you can copy the ami's in all region using the script :
+
 ```
 ./scripts/copy-ami.sh
 ```
 
-    then you can use the script to get a mapping of all ami's using:
+then you can use the script to get a mapping of all ami's using:
+
 ```
 ./scripts/amimap.sh
 ```
-    Then replace the mappings in the clickhouse.yml cloudformation template
+
+Then replace the mappings in the clickhouse.yml cloudformation template
     
+---
 
 ### For deleting all the services and cleaning up all the resources(is an irreversible action)
 
@@ -314,4 +469,24 @@ This will stop all the ecs services and your clickhouse cloudformation stack.
 
 ```
 make delete
+```
+
+### To change the backup frequency of the clickhouse cluster:
+
+Currently the clickhouse servers are configured to backup their data to aws s3 every 24 hours, if your want to change the backup frequency you will have to create your own custom clickhouse ami's. To make your own ami's please use our amis (present in clickhouse.yml clouformation file) as the base and then configure the cron job to run at whateverfrequency you desire.
+
+script for backing up the clickhouse databse(configure you cron job to run this script):
+``` bash
+  #!/bin/bash
+  BACKUP_NAME=my_backup_$(date -u +%Y-%m-%dT%H-%M-%S)
+  clickhouse-backup create --config /etc/clickhouse-backup/config.yml $BACKUP_NAME >> /var/log/clickhouse-backup.log
+  if [[ $? != 0 ]]; then
+    echo "clickhouse-backup create $BACKUP_NAME FAILED and return $? exit code"
+  fi
+
+  clickhouse-backup upload --config /etc/clickhouse-backup/config.yml $BACKUP_NAME >> /var/log/clickhouse-backup.log
+  if [[ $? != 0 ]]; then
+    echo "clickhouse-backup upload $BACKUP_NAME FAILED and return $? exit code"
+  fi
+
 ```
