@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+export fileName=signoz-ecs-config.yml
 
 
 otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' output.yml)
@@ -21,8 +21,8 @@ rm copilot/test-svc/manifest.yml-r
 
 accountId=$(aws sts get-caller-identity --output json | jq -r '.Account')
 region=$(aws configure get region)
-repoName=$(yq '.signoz-app.fluentbitConf.repoName' signoz-ecs-config.yml)
-imageName=$(yq '.signoz-app.fluentbitConf.localImageName' signoz-ecs-config.yml)
+repoName=$(yq '.signoz-app.fluentbitConf.repoName' $fileName)
+imageName=$(yq '.signoz-app.fluentbitConf.localImageName' $fileName)
 
 docker build -t $imageName ./copilot/fluentbit 
 

@@ -1,4 +1,8 @@
-clickhouseCluster=$(yq '.signoz-app.clickhouseConf.stackName' signoz-ecs-config.yml)-signoz
+
+export fileName=signoz-ecs-config.yml
+
+
+clickhouseCluster=$(yq '.signoz-app.clickhouseConf.stackName' $fileName)-signoz
 echo "This will delete your cloudformation stack"
 aws cloudformation delete-stack --stack-name $clickhouseCluster 
 aws cloudformation wait stack-delete-complete --stack-name $clickhouseCluster

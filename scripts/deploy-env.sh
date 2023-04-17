@@ -2,14 +2,15 @@
 
 export AWS_ACCESS_KEY_ID=$1
 export AWS_SECRET_ACCESS_KEY=$2
-appName=$(yq '.signoz-app.application-name' signoz-ecs-config.yml)
+export fileName=signoz-ecs-config.yml
+appName=$(yq '.signoz-app.application-name' $fileName)
 [ -z "$appName" ] && echo "No app name argument supplied" && exit 1
 AppName="$appName-app"
 copilot app init $AppName
 
 #creating a clickhouse cluster
 
-envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
+envName=$(yq '.signoz-app.environment-name' $fileName)-signoz
 [ -z "$envName" ] && echo "No env name argument is provided" && exit 1
 
 vpcId=$(yq '.signoz-app.existingVpc.vpcId' output.yml)

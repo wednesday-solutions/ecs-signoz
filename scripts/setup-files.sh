@@ -1,15 +1,15 @@
 #!/bin/bash
 
+export configFile=signoz-ecs-config.yml
+appName=$(yq '.signoz-app.application-name' $configFile)
+envName=$(yq '.signoz-app.environment-name' $configFile)-signoz
 
-appName=$(yq '.signoz-app.application-name' signoz-ecs-config.yml)
-envName=$(yq '.signoz-app.environment-name' signoz-ecs-config.yml)-signoz
+otel=$(yq '.signoz-app.serviceNames.otel' $configFile)
+query=$(yq '.signoz-app.serviceNames.query' $configFile)
+alert=$(yq '.signoz-app.serviceNames.alert' $configFile)
+frontend=$(yq '.signoz-app.serviceNames.frontend' $configFile)
 
-otel=$(yq '.signoz-app.serviceNames.otel' signoz-ecs-config.yml)
-query=$(yq '.signoz-app.serviceNames.query' signoz-ecs-config.yml)
-alert=$(yq '.signoz-app.serviceNames.alert' signoz-ecs-config.yml)
-frontend=$(yq '.signoz-app.serviceNames.frontend' signoz-ecs-config.yml)
-
-export clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' signoz-ecs-config.yml)
+export clickhouseHost=$(yq '.signoz-app.clickhouseConf.hostName' $configFile)
 
 filename=output.yml
 test -f $filename || touch $filename
