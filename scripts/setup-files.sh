@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export configFile=signoz-ecs-config.yml
+[! -z "$environmentName" ] && export fileName=signoz-ecs-config-$environmentName.yml
 appName=$(yq '.signoz-app.application-name' $configFile)
 envName=$(yq '.signoz-app.environment-name' $configFile)-signoz
 

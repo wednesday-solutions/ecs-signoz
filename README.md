@@ -139,6 +139,13 @@ To instrument your applications and send data to SigNoz please refer- https://si
 
 ---
 
+### Configuring a config file with custom prefix
+
+You can also mention the name of a custom config file of the form signoz-ecs-config-**suffix**, you can mention the suffix by defining an environment variable **"$environmentName"** and then the scripts will use the custom config file. you revise a wordy sentence in an effortless manner.
+
+
+---
+
 ### To deploy Signoz:
 
 #### If you want to deploy from scratch - to deploy your own vpc,clickhouse cluster and fargate cluster
