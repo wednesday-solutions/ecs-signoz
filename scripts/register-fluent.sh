@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export fileName=signoz-ecs-config.yml
-[! -z "$environmentName" ] && export fileName=signoz-ecs-config-$environmentName.yml
+[[ ! -z "$var" ]] && export fileName=signoz-ecs-config-$environmentName.yml
 
 
 otelEndpoint=$(yq '.signoz-app.otel-service-endpoint' output.yml)

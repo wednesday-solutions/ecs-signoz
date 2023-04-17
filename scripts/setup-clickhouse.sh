@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export fileName=signoz-ecs-config.yml
-[! -z "$environmentName" ] && export fileName=signoz-ecs-config-$environmentName.yml
+[[ ! -z "$var" ]] && export fileName=signoz-ecs-config-$environmentName.yml
 
  clickhouseStackName=$(yq '.signoz-app.clickhouseConf.stackName' $fileName)-signoz
 [ -z "$clickhouseStackName" ] && echo "No clickhouse service name argument supplied" && exit 1
