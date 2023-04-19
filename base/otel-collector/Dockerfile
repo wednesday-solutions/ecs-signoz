@@ -1,4 +1,4 @@
-FROM signoz/signoz-otel-collector:${OTELCOL_TAG:-0.66.6}
+FROM signoz/signoz-otel-collector:${OTELCOL_TAG:-0.66.7}
 
 
 

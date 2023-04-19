@@ -1,4 +1,4 @@
-FROM signoz/query-service:${DOCKER_TAG:-0.17.0}
+FROM signoz/query-service:${DOCKER_TAG:-0.18.1}
 
 
 ENV ClickHouseUrl=tcp://clickhouse-host:9000/?database=signoz_traces

@@ -1,4 +1,4 @@
-FROM signoz/frontend:${DOCKER_TAG:-0.17.0}
+FROM signoz/frontend:${DOCKER_TAG:-0.18.1}
 
 COPY ./common/nginx-config.conf /etc/nginx/conf.d/default.conf
 RUN apk add bash
